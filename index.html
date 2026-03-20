@@ -148,6 +148,22 @@
     .status-bar.wait .s-dot { background: var(--warning); animation: pulse 1s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
+    /* ── Install banner ── */
+    .install-banner {
+      background: var(--surface); border: 1px solid rgba(15,98,254,0.4);
+      border-radius: var(--radius-lg); padding: var(--space-5);
+      margin-bottom: var(--space-6);
+    }
+    .install-banner.hidden { display: none; }
+    .install-banner h3 { font-size: var(--font-headline); font-weight: 600; margin-bottom: var(--space-2); }
+    .install-banner p { font-size: var(--font-subhead); color: var(--label-secondary); margin-bottom: var(--space-4); line-height: 1.5; }
+    .install-steps { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-4); }
+    .install-step { display: flex; align-items: flex-start; gap: var(--space-3); font-size: var(--font-subhead); }
+    .step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff;
+      font-size: 0.6875rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .install-step code { background: var(--surface-raised); padding: 1px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.8125rem; }
+    .install-actions { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+
     /* ── Card ── */
     .card {
       background: var(--surface); border: 1px solid var(--separator); border-radius: var(--radius-lg);
@@ -372,6 +388,29 @@
     <span id="status-txt">Checking Canvas connection…</span>
   </div>
 
+  <div class="install-banner hidden" id="install-banner">
+    <h3>Install the SkillsPath Extension</h3>
+    <p>The extension reads your Canvas courses and IBM SkillsBuild history so the AI advisor can build a personalized roadmap. It takes about 60 seconds to set up.</p>
+    <div class="install-steps">
+      <div class="install-step">
+        <div class="step-num">1</div>
+        <span>Download the extension zip below and unzip it anywhere on your computer.</span>
+      </div>
+      <div class="install-step">
+        <div class="step-num">2</div>
+        <span>Open <code>chrome://extensions</code> in Chrome and enable <strong>Developer mode</strong> (toggle, top-right).</span>
+      </div>
+      <div class="install-step">
+        <div class="step-num">3</div>
+        <span>Click <strong>Load unpacked</strong> and select the unzipped <code>extension</code> folder. Then open <a href="https://canvas.instructure.com" target="_blank" rel="noopener">Canvas</a> and <a href="https://skills.yourlearning.ibm.com" target="_blank" rel="noopener">IBM SkillsBuild</a> to sync your data.</span>
+      </div>
+    </div>
+    <div class="install-actions">
+      <a class="btn-primary" href="https://github.com/skillspath/skillspath.github.io/releases/download/v1.0/skillspath-extension.zip" download>Download extension (.zip)</a>
+      <button class="btn-outline" onclick="document.getElementById('install-banner').classList.add('hidden')">I already installed it</button>
+    </div>
+  </div>
+
   <div class="card">
     <h2>Get your roadmap</h2>
     <div style="margin-bottom:1.125rem">
@@ -518,11 +557,14 @@ function postMessageRequest(type, responseType, timeout = 2000) {
 function renderStatus(d) {
   const bar = document.getElementById('status-bar');
   const txt = document.getElementById('status-txt');
+  const banner = document.getElementById('install-banner');
   if (!d) {
     bar.className = 'status-bar err';
-    txt.textContent = 'Extension not detected — install the SkillsPath Chrome extension, then refresh.';
+    txt.textContent = 'Extension not detected — see install instructions below.';
+    if (banner) banner.classList.remove('hidden');
     return;
   }
+  if (banner) banner.classList.add('hidden');
   const parts = [];
   if (d.canvasCourses > 0) parts.push(`Canvas: ${d.canvasCourses} courses`);
   if (d.sbCompleted > 0)   parts.push(`SkillsBuild: ${d.sbCompleted} completed`);
