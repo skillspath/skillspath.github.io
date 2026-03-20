@@ -45,29 +45,36 @@
     ]);
 
     // Normalise completed courses from whichever endpoint responded
-    // API returns { data: { transcriptRecords: [...] } }
     const rawTranscripts = transcripts?.data?.transcriptRecords || transcripts?.rawTranscripts || transcripts?.items || (Array.isArray(transcripts) ? transcripts : []);
     const rawPlans = plans?.data?.transcriptRecords || plans?.items || (Array.isArray(plans) ? plans : []);
 
+    const completedStatuses = new Set(['COMPLETED', 'PASSED', 'COMPLETE', 'SUCCESSFUL']);
+
     const completedCourses = [...(Array.isArray(rawTranscripts) ? rawTranscripts : []), ...(Array.isArray(rawPlans) ? rawPlans : [])]
-      .filter(item => {
-        const s = (item.learnerTranscriptStatus || item.status || item.completionStatus || '').toUpperCase();
-        return s === 'COMPLETED' || s === 'PASSED';
-      })
+      .filter(Boolean)
+      .filter(item => completedStatuses.has(String(item.learnerTranscriptStatus || item.status || item.completionStatus || '').toUpperCase()))
       .map(item => ({
         id:          item.learningActivityID || item.ID || item.id || '',
         title:       item.learningActivityTitle || item.title || item.name || '',
         completedAt: item.learningCompletedDate || item.completedDate || item.completedTime || null,
       }))
-      .filter((c, i, arr) => c.title && arr.findIndex(x => x.id === c.id) === i); // dedupe
+      .filter(c => c.title)
+      .filter((c, i, arr) => arr.findIndex(x => (x.id || x.title) === (c.id || c.title)) === i); // dedupe
 
-    const rawCreds = credentials?.rawTranscripts || credentials?.items || credentials?.data || (Array.isArray(credentials) ? credentials : []);
+    const rawCreds =
+      credentials?.data?.transcriptRecords ||
+      credentials?.rawTranscripts ||
+      credentials?.items ||
+      (Array.isArray(credentials?.data) ? credentials.data : []) ||
+      (Array.isArray(credentials) ? credentials : []);
+
     const credentialsArr = rawCreds
+      .filter(Boolean)
       .map(c => ({
         id:       c.credentialId    || c.id    || '',
         title:    c.credentialTitle || c.title || c.name || '',
-        status:   c.status          || '',
-        earnedAt: c.earnedDate      || c.earnedAt || null,
+        status:   c.status          || c.learnerTranscriptStatus || '',
+        earnedAt: c.earnedDate      || c.earnedAt || c.completedDate || null,
       }))
       .filter(c => c.title);
 
