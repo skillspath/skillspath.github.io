@@ -881,8 +881,16 @@ function renderStatus(d) {
 let _statusRendered = false;
 window.addEventListener('message', (event) => {
   if (event.data?.type === 'sp-health') {
+    const firstDetection = !_extensionAvailable;
     _extensionAvailable = true;
     if (!_statusRendered) { _statusRendered = true; renderStatus(event.data.data); }
+    // Re-probe proxy now that the extension relay is available
+    if (firstDetection) checkProxy().then(available => {
+      if (available) {
+        const row = document.getElementById('proxy-row');
+        if (row) { row.style.display = ''; document.getElementById('proxy-toggle').checked = useProxy(); }
+      }
+    });
   }
 });
 setTimeout(async () => {
@@ -1282,9 +1290,7 @@ document.getElementById('resume-file').addEventListener('change', async (e) => {
 // ── AI provider ───────────────────────────────────────────────────────────────
 async function checkProxy() {
   try {
-    const ac = new AbortController();
-    setTimeout(() => ac.abort(), 2000);
-    const res = await fetch(PROXY_URL, { method: 'POST', signal: ac.signal,
+    const res = await localFetch(PROXY_URL, { method: 'POST',
       headers: { 'content-type': 'application/json' }, body: '{}' });
     return res.status < 500;
   } catch { return false; }
