@@ -85,7 +85,8 @@
       background: var(--accent); border: none; color: var(--label);
       font-family: var(--font-stack); font-size: var(--font-subhead); font-weight: 600;
       padding: var(--space-2) var(--space-4); border-radius: var(--radius-sm); cursor: pointer;
-      min-height: 36px; transition: background 0.15s var(--ease);
+      min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s var(--ease);
     }
     .auth-btn:hover { background: var(--accent-hover); }
 
@@ -95,7 +96,8 @@
       display: flex; align-items: center; gap: var(--space-2);
       background: transparent; border: 1px solid var(--separator); border-radius: var(--radius-sm);
       color: var(--label-secondary); font-family: var(--font-stack); font-size: var(--font-footnote); font-weight: 500;
-      padding: var(--space-1) var(--space-3); cursor: pointer; min-height: 32px;
+      padding: var(--space-1) var(--space-3); cursor: pointer; min-height: 44px;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
       transition: border-color .15s var(--ease), color .15s var(--ease);
     }
     .user-btn:hover { border-color: rgba(255,255,255,0.25); color: var(--label); }
@@ -116,9 +118,9 @@
       color: var(--label-tertiary); padding: var(--space-3) var(--space-4) var(--space-1);
     }
     .dropdown-item {
-      display: flex; align-items: center; gap: var(--space-2); min-height: 36px;
+      display: flex; align-items: center; gap: var(--space-2); min-height: 44px;
       padding: var(--space-2) var(--space-4); font-size: var(--font-subhead); color: var(--label-secondary);
-      cursor: pointer; transition: background .1s, color .1s;
+      cursor: pointer; transition: background .1s, color .1s; touch-action: manipulation;
       background: transparent; border: none; width: 100%; text-align: left; font-family: var(--font-stack);
     }
     .dropdown-item:hover { background: rgba(255,255,255,0.06); color: var(--label); }
@@ -128,7 +130,7 @@
     .dropdown-item.danger:hover { background: rgba(218,30,40,.12); color: #ff8389; }
 
     /* ── Main layout ── */
-    main { max-width: 860px; margin: 0 auto; padding: var(--space-12) var(--space-8) 4rem; }
+    main { max-width: 860px; margin: 0 auto; padding: var(--space-12) var(--space-8) 4rem; overflow-wrap: break-word; }
 
     .hero { margin-bottom: var(--space-8); }
     .hero h1 { font-size: var(--font-hero); font-weight: 300; line-height: 1.25; margin-bottom: var(--space-3); }
@@ -205,7 +207,7 @@
     .help { font-size: var(--font-footnote); color: var(--label-tertiary); margin-top: var(--space-1); }
 
     /* ── Toggle ── */
-    .toggle-row { display: flex; align-items: center; gap: var(--space-3); cursor: pointer; user-select: none; margin-top: var(--space-4); min-height: 36px; }
+    .toggle-row { display: flex; align-items: center; gap: var(--space-3); cursor: pointer; user-select: none; margin-top: var(--space-4); min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
     .toggle-row input { display: none; }
     .track { width: 36px; height: 20px; background: rgba(255,255,255,0.18); border-radius: 10px; position: relative; transition: background .2s var(--ease); flex-shrink: 0; }
     .thumb { position: absolute; width: 14px; height: 14px; background: var(--label); border-radius: 50%; top: 3px; left: 3px; transition: left .2s var(--ease); }
@@ -218,17 +220,19 @@
       width: 100%; margin-top: var(--space-5); background: var(--accent); border: none;
       color: var(--label); font-family: var(--font-stack); font-size: var(--font-body);
       font-weight: 600; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md);
-      cursor: pointer; min-height: 44px;
+      cursor: pointer; min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
       transition: background .2s var(--ease), transform .1s var(--ease);
     }
     .btn-primary:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-primary:active:not(:disabled) { transform: scale(0.98); }
     .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
 
     .btn-outline {
       background: transparent; border: 1px solid var(--accent); color: var(--accent);
       border-radius: var(--radius-md); font-family: var(--font-stack); font-size: var(--font-subhead);
       font-weight: 600; padding: var(--space-2) var(--space-4); cursor: pointer; text-decoration: none;
-      display: inline-block; white-space: nowrap; min-height: 36px;
+      display: inline-flex; align-items: center; white-space: nowrap; min-height: 44px;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
       transition: background .15s var(--ease), color .15s var(--ease);
     }
     .btn-outline:hover { background: var(--accent); color: var(--label); }
@@ -373,25 +377,74 @@
     .rm-action { flex-shrink: 0; }
 
     footer { text-align: center; padding: var(--space-8); color: var(--label-tertiary); font-size: var(--font-footnote); }
+    footer abbr { text-decoration: underline dotted; cursor: help; }
 
-    @media (max-width: 580px) {
-      .rm-item { grid-template-columns: 2rem 1fr; }
+    /* ── Global UX ── */
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    :focus:not(:focus-visible) { outline: none; }
+
+    .card, .rm-item, .tc-card, .install-banner, .profile-inner {
+      overflow-wrap: break-word; word-break: break-word;
+    }
+
+    .rm-item { min-width: 0; }
+    .rm-content { min-width: 0; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      html { scroll-behavior: smooth; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ── Tablet (≤ 768px) ── */
+    @media (max-width: 768px) {
+      header { padding: 0 var(--space-5); }
+      main { padding: var(--space-8) var(--space-5) 3rem; }
+      .hero h1 { font-size: var(--font-title1); }
+      .card { padding: var(--space-5); }
+      .profile-inner { padding: var(--space-5); }
+      .rm-item { padding: var(--space-4); gap: var(--space-3); }
+      .install-banner { padding: var(--space-4); }
+      .install-actions { flex-direction: column; }
+      .install-actions .btn-primary,
+      .install-actions .btn-outline { width: 100%; justify-content: center; }
+    }
+
+    /* ── Mobile (≤ 480px) ── */
+    @media (max-width: 480px) {
+      header { padding: 0 var(--space-4); height: 52px; }
+      .logo-name { display: none; }
+      main { padding: var(--space-6) var(--space-4) 2.5rem; }
+      .hero { margin-bottom: var(--space-6); }
+      .hero h1 { font-size: var(--font-title3); }
+      .hero p { font-size: var(--font-subhead); }
+      .rm-item { grid-template-columns: 2rem 1fr; gap: var(--space-3); }
       .rm-action { grid-column: 2; }
+      .rm-num { width: 2rem; height: 2rem; font-size: var(--font-subhead); }
+      .rm-meta { flex-wrap: wrap; gap: var(--space-2); }
+      .gap-row { gap: var(--space-1); }
+      footer { padding: var(--space-6) var(--space-4); }
+      .dropdown { min-width: 180px; }
+      .user-btn .user-name { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     }
   </style>
 </head>
 <body>
 
-<header>
-  <span class="logo-ibm">IBM</span>
-  <div class="logo-div"></div>
+<header role="banner">
+  <span class="logo-ibm" aria-label="IBM">IBM</span>
+  <div class="logo-div" aria-hidden="true"></div>
   <span class="logo-name">SkillsPath</span>
   <div class="header-right" id="header-auth">
     <button class="auth-btn" id="btn-login" onclick="login()">Connect GitHub</button>
   </div>
 </header>
 
-<main>
+<main role="main">
   <div class="hero">
     <h1>Your personalized<br /><strong>IBM SkillsBuild</strong> roadmap</h1>
     <p>Connects your Canvas academic history to a curated learning path aligned with your career goals.</p>
@@ -402,8 +455,8 @@
     Connect your GitHub account above to get started.
   </div>
 
-  <div class="status-bar wait" id="status-bar">
-    <div class="s-dot"></div>
+  <div class="status-bar wait" id="status-bar" role="status" aria-live="polite">
+    <div class="s-dot" aria-hidden="true"></div>
     <span id="status-txt">Checking Canvas connection…</span>
   </div>
 
@@ -450,7 +503,7 @@
       <div class="track"><div class="thumb"></div></div>
       <span class="toggle-label">Try with sample student — no Canvas account needed</span>
     </label>
-    <div class="err-bar" id="form-err"></div>
+    <div class="err-bar" id="form-err" role="alert" aria-live="assertive"></div>
     <button class="btn-primary" id="submit-btn" onclick="submit()" disabled>
       Generate my learning roadmap →
     </button>
@@ -460,7 +513,7 @@
     </div>
   </div>
 
-  <div id="agent-panel">
+  <div id="agent-panel" aria-label="Agent activity" aria-live="polite">
     <h2>Agent activity</h2>
     <div class="tc-cards" id="tc-cards"></div>
   </div>
