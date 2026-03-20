@@ -712,7 +712,7 @@ function fmtCourses(courses, grades) {
       }
     }
     const state = c.workflow_state || '';
-    return `- ${c.name}${c.course_code ? ` [${c.course_code}]` : ''}${grade ? ` | Grade: ${grade}` : ''}${state === 'completed' || state === 'concluded' ? ' (completed)' : ''}`;
+    return `- ${c.name || '(Unnamed course)'}${c.course_code ? ` [${c.course_code}]` : ''}${grade ? ` | Grade: ${grade}` : ''}${state === 'completed' || state === 'concluded' ? ' (completed)' : ''}`;
   }).join('\n');
 }
 
@@ -1035,8 +1035,8 @@ function showProfileCard(name, bio, courses, grades) {
       : grade.startsWith('C') ? 'c' : 'ng';
     const el = document.createElement('div');
     el.className = `grade-chip ${gradeClass}`;
-    el.innerHTML = `<span class="code">${c.course_code || c.name.slice(0, 8)}</span><span class="grade">${grade || '—'}</span>`;
-    el.title = c.name;
+    el.innerHTML = `<span class="code">${c.course_code || (c.name || '').slice(0, 8)}</span><span class="grade">${grade || '—'}</span>`;
+    el.title = c.name || '';
     container.appendChild(el);
   });
   document.getElementById('profile-card').style.display = 'block';
