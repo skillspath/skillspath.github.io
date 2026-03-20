@@ -19,8 +19,7 @@ The advisor reasons through your background step by step, calling tools to fetch
 
 ## Architecture
 
-<img width="1408" height="768" alt="image" src="https://github.com/user-attachments/assets/a953bd88-53e4-4f96-88ef-f09ed5b41227" />
-
+![unnamed](https://github.com/user-attachments/assets/8f6c953e-508e-435d-81c9-6d57a4a520f5)
 
 - **Chrome Extension (MV3)** — runs content scripts on Canvas and IBM SkillsBuild, captures course history and credentials into `chrome.storage.local`, exposes it to the page via a postMessage bridge.
 - **Single-page app** — pure HTML + CSS + JS, no build step, deployed via GitHub Pages.
