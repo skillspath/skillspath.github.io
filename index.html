@@ -1151,40 +1151,48 @@ function oaiMsgsToAnthropic(msgs) {
 }
 
 async function callApi(msgs, tools, toolChoice) {
-  if (proxyAvailable) {
-    const { system, messages } = oaiMsgsToAnthropic(msgs);
-    const res = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6', system, messages,
-        tools: oaiToolsToAnthropic(tools),
-        tool_choice: oaiToolChoiceToAnthropic(toolChoice),
-        max_tokens: 4096, stream: true,
-      }),
-    });
-    if (!res.ok) {
-      const txt = await res.text();
-      if (res.status === 429) throw new Error('Rate limit reached — wait 30 seconds and try again.');
-      throw new Error(`Proxy error (${res.status}): ${txt.slice(0, 200)}`);
+  while (true) {
+    let res;
+    if (proxyAvailable) {
+      const { system, messages } = oaiMsgsToAnthropic(msgs);
+      res = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6', system, messages,
+          tools: oaiToolsToAnthropic(tools),
+          tool_choice: oaiToolChoiceToAnthropic(toolChoice),
+          max_tokens: 4096, stream: true,
+        }),
+      });
+    } else {
+      res = await fetch('https://models.github.ai/inference/chat/completions', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'authorization': `Bearer ${auth.token}` },
+        body: JSON.stringify({
+          model: selectedModel, messages: msgs, tools, tool_choice: toolChoice,
+          max_completion_tokens: 4096, stream: true,
+        }),
+      });
     }
-    return { body: res.body, provider: 'anthropic' };
-  } else {
-    const res = await fetch('https://models.github.ai/inference/chat/completions', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'authorization': `Bearer ${auth.token}` },
-      body: JSON.stringify({
-        model: selectedModel, messages: msgs, tools, tool_choice: toolChoice,
-        max_completion_tokens: 4096, stream: true,
-      }),
-    });
+
+    if (res.status === 429) {
+      const btn = document.getElementById('submit-btn');
+      for (let i = 30; i > 0; i--) {
+        btn.textContent = `Rate limited — retrying in ${i}s…`;
+        await new Promise(r => setTimeout(r, 1000));
+      }
+      btn.textContent = 'Analyzing…';
+      continue;
+    }
+
     if (!res.ok) {
       const txt = await res.text();
-      if (res.status === 429) throw new Error('Rate limit reached — wait 30 seconds and try again, or switch models in the menu above.');
       if (res.status === 401) throw new Error('GitHub token expired — sign out and reconnect your account.');
-      throw new Error(`Request failed (${res.status}). Try again or switch to demo mode.`);
+      throw new Error(`Request failed (${res.status}): ${txt.slice(0, 200)}`);
     }
-    return { body: res.body, provider: 'openai' };
+
+    return { body: res.body, provider: proxyAvailable ? 'anthropic' : 'openai' };
   }
 }
 
