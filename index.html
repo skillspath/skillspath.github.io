@@ -348,7 +348,21 @@
       transition: background .15s var(--ease);
     }
     .rm-role-pill:hover { background: rgba(159,24,83,.28); }
-    .gap-row { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
+    /* ── Role readiness row ── */
+    .rm-readiness { margin: var(--space-3) 0 var(--space-4); }
+    .rm-readiness-label { font-size: var(--font-caption); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--label-tertiary); margin-bottom: var(--space-2); }
+    .rm-readiness-skills { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .skill-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      border-radius: var(--radius-sm); padding: var(--space-1) var(--space-2);
+      font-size: var(--font-caption); font-weight: 600;
+    }
+    .skill-chip.gap  { background: rgba(218,30,40,.15); border: 1px solid rgba(218,30,40,.35); color: #ff8389; }
+    .skill-chip.have { background: rgba(25,128,56,.15);  border: 1px solid rgba(25,128,56,.35);  color: #42be65; }
+    .skill-chip svg  { flex-shrink: 0; }
+    .rm-contrast { font-size: var(--font-footnote); color: var(--label-tertiary); margin-bottom: var(--space-2); }
+    .gap-row { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-1); }
+    .gap-row-label { font-size: var(--font-caption); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--label-tertiary); margin-top: var(--space-4); margin-bottom: var(--space-2); }
     .gap-tag {
       background: rgba(105,41,196,.2); border: 1px solid rgba(105,41,196,.5);
       color: #be95ff; border-radius: var(--radius-sm); padding: var(--space-1) var(--space-2);
@@ -365,6 +379,20 @@
     .rm-item:hover {
       border-color: rgba(15,98,254,.3);
       box-shadow: var(--shadow-md), 0 0 0 1px rgba(15,98,254,.15);
+    }
+    .rm-item.first {
+      background: var(--surface-raised); border-color: rgba(15,98,254,.45);
+      box-shadow: var(--shadow-md), 0 0 0 1px rgba(15,98,254,.2);
+      grid-template-columns: 2.25rem 1fr auto;
+      grid-template-rows: auto 1fr;
+    }
+    .rm-item.first .rm-num { background: var(--accent); box-shadow: 0 0 0 4px rgba(15,98,254,.25); }
+    .rm-item.first .rm-title { font-size: var(--font-headline); }
+    .rm-item.first .rm-reason { color: var(--label); }
+    .start-here {
+      grid-column: 1 / -1; font-size: var(--font-caption); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .08em; color: var(--accent);
+      margin-bottom: calc(var(--space-2) * -1);
     }
     @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
     .rm-num {
@@ -542,7 +570,13 @@
     <div class="rm-header">
       <h2>Your IBM SkillsBuild Roadmap</h2>
       <div id="rm-role-pill"></div>
+      <div class="rm-readiness" id="rm-readiness" style="display:none">
+        <div class="rm-readiness-label">IBM role requirements</div>
+        <div class="rm-readiness-skills" id="rm-readiness-skills"></div>
+      </div>
+      <p class="rm-contrast" id="rm-contrast"></p>
       <p class="rm-summary" id="rm-summary"></p>
+      <div class="gap-row-label" id="rm-gaps-label" style="display:none">Identified skill gaps</div>
       <div class="gap-row" id="rm-gaps"></div>
     </div>
     <div class="rm-list" id="rm-list"></div>
@@ -953,7 +987,18 @@ async function executeTool(name, args, demoMode) {
     const grades = data.grades || {};
     const profile = data.userProfile || {};
     showProfileCard(profile.name || 'Student', profile.bio || '', courses, grades, demoMode);
-    return { courses_text: fmtCourses(courses, grades), count: courses.length };
+    // Surface top-graded courses for the tool card summary
+    const GRADE_RANK = { 'A+':4.3,'A':4.0,'A-':3.7,'B+':3.3,'B':3.0,'B-':2.7,'C+':2.3,'C':2.0 };
+    const top = courses
+      .map(c => {
+        const g = grades[String(c.id || '')];
+        const letter = g?.currentGrade || g?.finalGrade || '';
+        return { name: c.name || '', code: c.course_code || '', letter, rank: GRADE_RANK[letter] ?? -1 };
+      })
+      .filter(c => c.rank >= 3.0)
+      .sort((a, b) => b.rank - a.rank)
+      .slice(0, 3);
+    return { courses_text: fmtCourses(courses, grades), count: courses.length, top };
   }
   if (name === 'fetch_resume') {
     if (!window._resumeText) return { text: 'No resume uploaded.' };
@@ -1083,7 +1128,11 @@ window.submit = async () => {
   document.getElementById('rm-list').innerHTML = '';
   document.getElementById('rm-gaps').innerHTML = '';
   document.getElementById('rm-summary').textContent = '';
+  document.getElementById('rm-contrast').textContent = '';
   document.getElementById('rm-role-pill').innerHTML = '';
+  document.getElementById('rm-readiness-skills').innerHTML = '';
+  document.getElementById('rm-readiness').style.display = 'none';
+  document.getElementById('rm-gaps-label').style.display = 'none';
   window._matchedRole = null;
   document.getElementById('agent-panel').style.display = 'none';
   document.getElementById('profile-card').style.display = 'none';
@@ -1177,7 +1226,7 @@ window.submit = async () => {
         break;
       }
 
-      // Execute tools — minimum 900ms display so judges can read each card
+      // Execute tools — minimum 600ms display so judges can read each card
       const sleep = ms => new Promise(r => setTimeout(r, ms));
       for (const tc of toolCalls) {
         let args = {};
@@ -1185,7 +1234,7 @@ window.submit = async () => {
         addToolCard(tc.id, getToolIcon(tc.name), getToolLabel(tc.name, args), tc.name);
         const [result] = await Promise.all([
           executeTool(tc.name, args, demoMode),
-          sleep(900),
+          sleep(600),
         ]);
         completeToolCard(tc.id, result, tc.name);
         msgs.push({ role: 'tool', tool_call_id: tc.id, content: JSON.stringify(result) });
@@ -1274,7 +1323,14 @@ function getToolSummary(result, toolName) {
     return `<strong>${result.name || 'Student'}</strong>${result.bio ? ' — ' + result.bio : ''}`;
   }
   if (toolName === 'fetch_canvas_courses') {
-    return `<strong>${result.count}</strong> courses loaded`;
+    const base = `<strong>${result.count}</strong> courses loaded`;
+    if (result.top?.length) {
+      const chips = result.top.map(c =>
+        `<span class="tc-chip">${c.code || c.name.split(' ').slice(0,2).join(' ')} <strong>${c.letter}</strong></span>`
+      ).join('');
+      return `${base} · strongest in<div class="tc-result-chips">${chips}</div>`;
+    }
+    return base;
   }
   if (toolName === 'fetch_skillsbuild_history') {
     const completed = (result.completed_courses || '').split('\n').filter(l => l.trim().startsWith('-')).length;
@@ -1336,6 +1392,8 @@ function showRoadmap(data) {
   const firstName = (data.student_name || '').split(' ')[0];
   document.querySelector('#roadmap .rm-header h2').textContent =
     firstName ? `${firstName}'s IBM SkillsBuild Roadmap` : 'Your IBM SkillsBuild Roadmap';
+
+  // ── IBM role pill ──
   const pillEl = document.getElementById('rm-role-pill');
   if (window._matchedRole) {
     pillEl.innerHTML = `<a class="rm-role-pill" href="${window._matchedRole.url}" target="_blank" rel="noopener">
@@ -1345,15 +1403,46 @@ function showRoadmap(data) {
   } else {
     pillEl.innerHTML = '';
   }
-  document.getElementById('rm-summary').textContent = data.summary || '';
-  const gaps = document.getElementById('rm-gaps');
-  (data.skill_gaps || []).forEach(g => {
-    const el = document.createElement('span');
-    el.className = 'gap-tag'; el.textContent = g;
-    gaps.appendChild(el);
-  });
-  const list = document.getElementById('rm-list');
+
+  // ── Role readiness row: IBM required skills, each marked covered or gap ──
+  if (window._matchedRole?.required_skills?.length) {
+    const gapSet = new Set((data.skill_gaps || []).map(g => g.toLowerCase()));
+    const skillsEl = document.getElementById('rm-readiness-skills');
+    skillsEl.innerHTML = '';
+    window._matchedRole.required_skills.forEach(skill => {
+      const isGap = gapSet.has(skill.toLowerCase()) ||
+        [...gapSet].some(g => g.includes(skill.toLowerCase()) || skill.toLowerCase().includes(g));
+      const chip = document.createElement('span');
+      chip.className = `skill-chip ${isGap ? 'gap' : 'have'}`;
+      chip.innerHTML = isGap
+        ? `<svg width="9" height="9" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>${skill}`
+        : `<svg width="9" height="9" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>${skill}`;
+      skillsEl.appendChild(chip);
+    });
+    document.getElementById('rm-readiness').style.display = 'block';
+  }
+
+  // ── Contrast line ──
   const items = data.roadmap || [];
+  const contrastEl = document.getElementById('rm-contrast');
+  contrastEl.textContent = items.length
+    ? `1,000+ SkillsBuild courses → your ${items.length}, gap-targeted and role-ranked`
+    : '';
+
+  document.getElementById('rm-summary').textContent = data.summary || '';
+
+  // ── Skill gaps ──
+  const gaps = document.getElementById('rm-gaps');
+  if ((data.skill_gaps || []).length) {
+    document.getElementById('rm-gaps-label').style.display = 'block';
+    (data.skill_gaps || []).forEach(g => {
+      const el = document.createElement('span');
+      el.className = 'gap-tag'; el.textContent = g;
+      gaps.appendChild(el);
+    });
+  }
+
+  const list = document.getElementById('rm-list');
   if (items.length) {
     const totalHours = items.reduce((s, r) => s + (r.duration_hours || 0), 0);
     const stat = document.createElement('p');
@@ -1363,10 +1452,11 @@ function showRoadmap(data) {
   }
   items.forEach((item, i) => {
     const el = document.createElement('div');
-    el.className = 'rm-item';
+    el.className = i === 0 ? 'rm-item first' : 'rm-item';
     el.style.animationDelay = `${i * 0.07}s`;
     const lvl = (item.level || '').toLowerCase();
     el.innerHTML = `
+      ${i === 0 ? '<span class="start-here">Start here</span>' : ''}
       <div class="rm-num">${item.priority}</div>
       <div>
         <div class="rm-track">${item.track || ''}</div>
