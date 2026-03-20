@@ -549,7 +549,7 @@
   </div>
 </main>
 
-<footer>Built by Jaideep Aher, Roshan Gill &amp; Jonas Neves at <abbr title="North Carolina Central University — HBCU">NCCU</abbr> · IBM SkillsBuild AI Hackathon · 2026</footer>
+<footer>Built by Jaideep Aher, Roshan Gill &amp; Jonas Neves at <abbr title="North Carolina Central University — HBCU">NCCU</abbr> · IBM SkillsBuild AI Hackathon · 2026 · <a href="https://github.com/skillspath/skillspath.github.io" target="_blank" rel="noopener" style="color:var(--label-tertiary);text-decoration:none">GitHub ↗</a></footer>
 
 <script type="module">
 import { connectGitHub } from 'https://neevs.io/auth/connect.js';
@@ -752,7 +752,7 @@ const IBM_ROLES = [
     id: 'pm-intern',
     title: 'Product Management Intern',
     team: 'IBM Product & Strategy',
-    url: 'https://www.ibm.com/careers/internships',
+    url: 'https://www.ibm.com/careers/search?q=product+management+intern',
     required_skills: ['agile','design thinking','user research','problem solving','communication','roadmap planning','stakeholder management'],
     nice_to_have: ['SQL','data analysis','UX','APIs','watsonx'],
     description: 'Define product strategy, work with engineering and design, drive roadmap decisions for IBM software products.',
@@ -761,7 +761,7 @@ const IBM_ROLES = [
     id: 'ml-engineer-intern',
     title: 'Machine Learning Engineer Intern',
     team: 'IBM Research / IBM Data & AI',
-    url: 'https://www.ibm.com/careers/internships',
+    url: 'https://www.ibm.com/careers/search?q=machine+learning+engineer+intern',
     required_skills: ['python','machine learning','deep learning','scikit-learn','model evaluation','statistics'],
     nice_to_have: ['tensorflow','pytorch','MLOps','watsonx','NLP','SQL','Spark'],
     description: 'Build and deploy ML models for IBM products; contribute to IBM watsonx or IBM Research projects.',
@@ -770,7 +770,7 @@ const IBM_ROLES = [
     id: 'data-scientist-intern',
     title: 'Data Scientist Intern',
     team: 'IBM Consulting / IBM Data & AI',
-    url: 'https://www.ibm.com/careers/internships',
+    url: 'https://www.ibm.com/careers/search?q=data+scientist+intern',
     required_skills: ['python','pandas','statistics','data visualization','SQL','machine learning'],
     nice_to_have: ['Spark','big data','IBM Db2','Cognos','Jupyter','storytelling'],
     description: 'Analyze large datasets to surface business insights; build models and dashboards for IBM clients.',
@@ -779,7 +779,7 @@ const IBM_ROLES = [
     id: 'cloud-engineer-intern',
     title: 'Cloud & DevOps Engineer Intern',
     team: 'IBM Cloud / IBM Technology',
-    url: 'https://www.ibm.com/careers/internships',
+    url: 'https://www.ibm.com/careers/search?q=cloud+devops+engineer+intern',
     required_skills: ['cloud computing','Kubernetes','Docker','CI/CD','Linux','REST API'],
     nice_to_have: ['IBM Cloud','OpenShift','Terraform','Ansible','Python','monitoring'],
     description: 'Deploy and manage cloud-native applications on IBM Cloud and Red Hat OpenShift.',
@@ -788,7 +788,7 @@ const IBM_ROLES = [
     id: 'cybersecurity-intern',
     title: 'Cybersecurity Analyst Intern',
     team: 'IBM Security / IBM X-Force',
-    url: 'https://www.ibm.com/careers/internships',
+    url: 'https://www.ibm.com/careers/search?q=cybersecurity+analyst+intern',
     required_skills: ['cybersecurity','network security','threat analysis','SIEM','incident response'],
     nice_to_have: ['penetration testing','forensics','compliance','QRadar','Python','cloud security'],
     description: 'Detect and respond to threats using IBM QRadar SIEM; support IBM X-Force threat intelligence.',
@@ -797,7 +797,7 @@ const IBM_ROLES = [
     id: 'software-dev-intern',
     title: 'Software Developer Intern',
     team: 'IBM Technology / IBM Consulting',
-    url: 'https://www.ibm.com/careers/internships',
+    url: 'https://www.ibm.com/careers/search?q=software+developer+intern',
     required_skills: ['software engineering','Python','agile','Git','REST API','testing'],
     nice_to_have: ['Java','Node.js','Kubernetes','CI/CD','microservices','cloud-native'],
     description: 'Build enterprise software features; contribute to IBM Cloud Paks or client-facing applications.',
@@ -806,7 +806,7 @@ const IBM_ROLES = [
     id: 'ai-research-intern',
     title: 'AI Research Intern',
     team: 'IBM Research',
-    url: 'https://www.ibm.com/careers/internships',
+    url: 'https://www.ibm.com/careers/search?q=AI+research+intern',
     required_skills: ['deep learning','NLP','python','research','pytorch','mathematics'],
     nice_to_have: ['transformers','BERT','generative AI','watsonx','publications','reinforcement learning'],
     description: 'Conduct original AI research at IBM Research labs; contribute to foundation models and responsible AI.',
@@ -1333,6 +1333,9 @@ function showProfileCard(name, bio, courses, grades, isDemo) {
 }
 
 function showRoadmap(data) {
+  const firstName = (data.student_name || '').split(' ')[0];
+  document.querySelector('#roadmap .rm-header h2').textContent =
+    firstName ? `${firstName}'s IBM SkillsBuild Roadmap` : 'Your IBM SkillsBuild Roadmap';
   const pillEl = document.getElementById('rm-role-pill');
   if (window._matchedRole) {
     pillEl.innerHTML = `<a class="rm-role-pill" href="${window._matchedRole.url}" target="_blank" rel="noopener">
@@ -1401,33 +1404,38 @@ window.onDemoToggle = (on) => {
 // ── Demo data ─────────────────────────────────────────────────────────────────
 function demoData() {
   return {
-    userProfile: { name: 'Jordan Williams', bio: 'CS student at NCCU interested in AI and data science.', primary_email: 'jordan@nccu.edu' },
+    userProfile: { name: 'Jordan Williams', bio: 'Junior CS student at NCCU. Strong in algorithms and databases — never touched Python for ML or any cloud platform.', primary_email: 'jordan@nccu.edu' },
     courses: [
-      { id:1, name:'Intro to Computer Science', course_code:'CS101', workflow_state:'completed' },
-      { id:2, name:'Calculus I', course_code:'MATH151', workflow_state:'completed' },
-      { id:3, name:'Data Structures & Algorithms', course_code:'CS201', workflow_state:'completed' },
-      { id:4, name:'Linear Algebra', course_code:'MATH260', workflow_state:'completed' },
-      { id:5, name:'Database Systems', course_code:'CS330', workflow_state:'completed' },
-      { id:6, name:'Software Engineering', course_code:'CS350', workflow_state:'available' },
-      { id:7, name:'Statistics for Data Science', course_code:'STAT310', workflow_state:'available' },
+      { id:1,  name:'Intro to Computer Science',    course_code:'CS101',  workflow_state:'completed' },
+      { id:2,  name:'Calculus I',                   course_code:'MATH151', workflow_state:'completed' },
+      { id:3,  name:'Data Structures & Algorithms', course_code:'CS201',  workflow_state:'completed' },
+      { id:4,  name:'Discrete Mathematics',         course_code:'MATH220', workflow_state:'completed' },
+      { id:5,  name:'Linear Algebra',               course_code:'MATH260', workflow_state:'completed' },
+      { id:6,  name:'Database Systems',             course_code:'CS330',  workflow_state:'completed' },
+      { id:7,  name:'Computer Organization',        course_code:'CS240',  workflow_state:'completed' },
+      { id:8,  name:'Software Engineering',         course_code:'CS350',  workflow_state:'available' },
+      { id:9,  name:'Statistics for Data Science',  course_code:'STAT310', workflow_state:'available' },
+      { id:10, name:'Operating Systems',            course_code:'CS360',  workflow_state:'available' },
     ],
     grades: {
-      '1':{ currentGrade:'A', currentScore:95 },
-      '2':{ currentGrade:'B+', currentScore:87 },
-      '3':{ currentGrade:'A-', currentScore:91 },
-      '4':{ currentGrade:'B', currentScore:82 },
-      '5':{ currentGrade:'A', currentScore:94 },
-      '6':{ currentGrade:'A', currentScore:96 },
-      '7':{ currentGrade:'B+', currentScore:88 },
+      '1': { currentGrade:'A',  currentScore:96 },
+      '2': { currentGrade:'B+', currentScore:88 },
+      '3': { currentGrade:'A',  currentScore:95 },
+      '4': { currentGrade:'B+', currentScore:87 },
+      '5': { currentGrade:'B',  currentScore:83 },
+      '6': { currentGrade:'A',  currentScore:94 },
+      '7': { currentGrade:'A-', currentScore:91 },
+      '8': { currentGrade:'A',  currentScore:97 },
+      '9': { currentGrade:'B+', currentScore:89 },
     },
     skillsbuild: {
-      profile: { name: 'Alex Johnson', email: 'alex@nccu.edu' },
+      profile: { name: 'Jordan Williams', email: 'jordan@nccu.edu' },
       completedCourses: [
-        { title: 'AI Foundations for Everyone', completedAt: '2025-11-10T00:00:00Z' },
-        { title: 'Agile Explorer', completedAt: '2025-12-01T00:00:00Z' },
+        { title: 'AI Foundations for Everyone', completedAt: '2025-09-14T00:00:00Z' },
+        { title: 'Agile Explorer',              completedAt: '2025-10-22T00:00:00Z' },
       ],
       credentials: [
-        { title: 'IBM AI Foundations Badge', earnedAt: '2025-11-15T00:00:00Z' },
+        { title: 'IBM AI Foundations Badge', earnedAt: '2025-09-20T00:00:00Z' },
       ],
     },
   };
