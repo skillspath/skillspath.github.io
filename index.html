@@ -604,6 +604,30 @@
 <script type="module">
 import { connectGitHub } from 'https://neevs.io/auth/connect.js';
 
+// ── AI provider constants (needed before renderAuth) ─────────────────────────
+const PROXY_URL = 'http://127.0.0.1:7337/v1/messages';
+const PROXY_KEY = 'sp-use-proxy';
+const OAIKEY_KEY = 'sp-openai-key';
+
+function useProxy() { return localStorage.getItem(PROXY_KEY) === 'true'; }
+function getOpenAIKey() { return localStorage.getItem(OAIKEY_KEY) || ''; }
+
+window.onApiKeyInput = (val) => {
+  localStorage.setItem(OAIKEY_KEY, val.trim());
+  updateSubmitBtn();
+};
+
+window.onProxyToggle = (checked) => {
+  localStorage.setItem(PROXY_KEY, String(checked));
+};
+
+function updateSubmitBtn() {
+  const btn = document.getElementById('submit-btn');
+  const hasGoal = !!document.getElementById('interests')?.value.trim();
+  const hasAuth = useProxy() || !!getOpenAIKey() || !!auth?.token;
+  if (btn) btn.disabled = !(hasGoal && hasAuth);
+}
+
 // ── Auth + model selection ─────────────────────────────────────────────────────
 let auth = JSON.parse(localStorage.getItem('sp-gh-auth') || 'null');
 
@@ -763,10 +787,6 @@ checkProxy().then(available => {
     document.getElementById('proxy-toggle').checked = useProxy();
   }
 });
-
-window.onProxyToggle = (checked) => {
-  localStorage.setItem(PROXY_KEY, String(checked));
-};
 
 document.getElementById('demo-mode').addEventListener('change', function () {
   const bar = document.getElementById('status-bar');
@@ -1134,25 +1154,6 @@ document.getElementById('resume-file').addEventListener('change', async (e) => {
 });
 
 // ── AI provider ───────────────────────────────────────────────────────────────
-const PROXY_URL = 'http://127.0.0.1:7337/v1/messages';
-const PROXY_KEY = 'sp-use-proxy';
-const OAIKEY_KEY = 'sp-openai-key';
-
-function useProxy() { return localStorage.getItem(PROXY_KEY) === 'true'; }
-function getOpenAIKey() { return localStorage.getItem(OAIKEY_KEY) || ''; }
-
-window.onApiKeyInput = (val) => {
-  localStorage.setItem(OAIKEY_KEY, val.trim());
-  updateSubmitBtn();
-};
-
-function updateSubmitBtn() {
-  const btn = document.getElementById('submit-btn');
-  const hasGoal = !!document.getElementById('interests')?.value.trim();
-  const hasAuth = useProxy() || !!getOpenAIKey() || !!auth?.token;
-  if (btn) btn.disabled = !(hasGoal && hasAuth);
-}
-
 async function checkProxy() {
   try {
     const ac = new AbortController();
