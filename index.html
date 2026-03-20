@@ -384,6 +384,7 @@
     .badge.advanced    { background: rgba(218,30,40,.2);  color: #fa4d56; }
     .rm-hrs    { font-size: var(--font-footnote); color: var(--label-tertiary); }
     .rm-reason { font-size: var(--font-subhead); color: var(--label-secondary); line-height: 1.5; }
+    .rm-stat   { font-size: var(--font-footnote); color: var(--label-tertiary); margin-bottom: var(--space-4); }
     .rm-action { flex-shrink: 0; }
 
     footer { text-align: center; padding: var(--space-8); color: var(--label-tertiary); font-size: var(--font-footnote); }
@@ -509,7 +510,7 @@
       <span id="resume-name" style="font-size:var(--font-footnote);color:var(--label-secondary);margin-left:.5rem"></span>
     </div>
     <label class="toggle-row">
-      <input type="checkbox" id="demo-mode" />
+      <input type="checkbox" id="demo-mode" onchange="onDemoToggle(this.checked)" />
       <div class="track"><div class="thumb"></div></div>
       <span class="toggle-label">Try with sample student — no Canvas account needed</span>
     </label>
@@ -996,6 +997,9 @@ const SYSTEM = `You are an IBM SkillsBuild career advisor agent.
 6. Produce a personalized, prioritized roadmap — only recommend courses they have NOT already completed.
    Prioritize courses that directly close gaps for the matched IBM role.
    If a course is already done, acknowledge it as a strength instead.
+   In each "reason" field, reference the student's ACTUAL courses and grades by name
+   (e.g. "You earned an A in Database Systems but have no cloud exposure — this bridges directly
+   to IBM Cloud roles"). Generic reasons like "this course teaches Python" are not acceptable.
 
 Output ONLY this JSON when ready (no prose, no code fences):
 {
@@ -1161,6 +1165,9 @@ window.submit = async () => {
         if (text.startsWith('```')) {
           text = text.split('\n').slice(1).join('\n').replace(/```$/, '').trim();
         }
+        // Extract first {...} block in case the model prefixed with prose
+        const jsonBlock = text.match(/\{[\s\S]*\}/);
+        if (jsonBlock) text = jsonBlock[0];
         try {
           showRoadmap(JSON.parse(text));
         } catch {
@@ -1337,7 +1344,15 @@ function showRoadmap(data) {
     gaps.appendChild(el);
   });
   const list = document.getElementById('rm-list');
-  (data.roadmap || []).forEach((item, i) => {
+  const items = data.roadmap || [];
+  if (items.length) {
+    const totalHours = items.reduce((s, r) => s + (r.duration_hours || 0), 0);
+    const stat = document.createElement('p');
+    stat.className = 'rm-stat';
+    stat.textContent = `${items.length} course${items.length !== 1 ? 's' : ''} · ~${totalHours}h to complete`;
+    list.appendChild(stat);
+  }
+  items.forEach((item, i) => {
     const el = document.createElement('div');
     el.className = 'rm-item';
     el.style.animationDelay = `${i * 0.07}s`;
@@ -1368,6 +1383,14 @@ function showErr(msg) {
   el.textContent = msg; el.style.display = 'block';
 }
 function clearErr() { document.getElementById('form-err').style.display = 'none'; }
+
+const DEMO_GOAL = "I want to work as an AI Engineer at IBM building healthcare AI systems, using Python and machine learning to improve patient outcomes.";
+
+window.onDemoToggle = (on) => {
+  const ta = document.getElementById('interests');
+  if (on && !ta.value.trim()) ta.value = DEMO_GOAL;
+  else if (!on && ta.value === DEMO_GOAL) ta.value = '';
+};
 
 // ── Demo data ─────────────────────────────────────────────────────────────────
 function demoData() {
