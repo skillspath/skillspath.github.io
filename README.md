@@ -40,13 +40,12 @@ content-canvas.js   content-skillsbuild.js         │
 
 ## Install the extension
 
-The extension is not yet published to the Chrome Web Store. Install it in two steps:
+The extension is not yet published to the Chrome Web Store. Use **Load unpacked** — this works on managed browsers (university IT policy blocks side-loaded `.crx` files).
 
-1. Open `chrome://extensions` in Chrome and enable **Developer mode** (toggle, top-right corner).
-2. **[Download extension.crx](https://github.com/skillspath/skillspath.github.io/releases/download/v1.0/extension.crx)**, drag it onto the `chrome://extensions` page, and click **Add extension**.
-3. Open [Canvas LMS](https://canvas.instructure.com) and [IBM SkillsBuild](https://skills.yourlearning.ibm.com) — your data syncs automatically.
-
-> Prefer manual install? **[Download .zip](https://github.com/skillspath/skillspath.github.io/releases/download/v1.0/skillspath-extension.zip)**, unzip, then use **Load unpacked** instead of drag-and-drop.
+1. **[Download skillspath-extension.zip](https://github.com/skillspath/skillspath.github.io/releases/download/v1.0/skillspath-extension.zip)** and unzip it.
+2. Open `chrome://extensions` in Chrome and enable **Developer mode** (toggle, top-right corner).
+3. Click **Load unpacked** → select the unzipped `extension` folder.
+4. Open [Canvas LMS](https://canvas.instructure.com) and [IBM SkillsBuild](https://skills.yourlearning.ibm.com) — your data syncs automatically.
 
 Then visit **[skillspath.github.io](https://skillspath.github.io)**, sign in with GitHub, and enter your career goal.
 
