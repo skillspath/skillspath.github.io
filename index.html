@@ -1609,7 +1609,7 @@ function showProfileCard(name, bio, courses, grades, isDemo) {
     liveEl.textContent = isDemo ? 'Demo · Sample student' : 'Live · Canvas data';
     liveEl.style.color = isDemo ? 'var(--warning)' : '';
   }
-  document.getElementById('profile-name').innerHTML = `<strong>${name}</strong>`;
+  document.getElementById('profile-name').innerHTML = `<strong>${esc(name)}</strong>`;
   document.getElementById('profile-meta').textContent = bio || '';
   const container = document.getElementById('profile-courses');
   container.innerHTML = '';
@@ -1699,15 +1699,15 @@ function showRoadmap(data) {
     const lvl = (item.level || '').toLowerCase();
     el.innerHTML = `
       ${i === 0 ? '<span class="start-here">Start here</span>' : ''}
-      <div class="rm-num">${item.priority}</div>
+      <div class="rm-num">${esc(item.priority)}</div>
       <div>
-        <div class="rm-track">${item.track || ''}</div>
-        <div class="rm-title">${item.title}</div>
+        <div class="rm-track">${esc(item.track)}</div>
+        <div class="rm-title">${esc(item.title)}</div>
         <div class="rm-meta">
-          <span class="badge ${lvl}">${item.level}</span>
-          <span class="rm-hrs">⏱ ${item.duration_hours}h</span>
+          <span class="badge ${esc(lvl)}">${esc(item.level)}</span>
+          <span class="rm-hrs">⏱ ${esc(item.duration_hours)}h</span>
         </div>
-        <div class="rm-reason">${item.reason}</div>
+        <div class="rm-reason">${esc(item.reason)}</div>
       </div>
       <div class="rm-action">
         <a class="btn-outline" href="https://skills.yourlearning.ibm.com/search/all/q=${encodeURIComponent(CATALOG_IDX[item.course_id]?.searchTerm || item.title)}" target="_blank" rel="noopener">Start →</a>
@@ -1717,6 +1717,10 @@ function showRoadmap(data) {
   const rm = document.getElementById('roadmap');
   rm.style.display = 'block';
   setTimeout(() => rm.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+
+function esc(str) {
+  return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function showErr(msg) {

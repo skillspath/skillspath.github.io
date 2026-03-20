@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     store.lastUpdate = new Date().toISOString();
     // Capture the Canvas host so the page can link users directly back to their school's Canvas
     if (sender?.tab?.url) {
-      try { store.lastCanvasHost = new URL(_sender.tab.url).origin; } catch {}
+      try { store.lastCanvasHost = new URL(sender.tab.url).origin; } catch {}
     }
     persist();
     sendResponse({ ok: true });
