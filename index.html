@@ -1100,12 +1100,159 @@ document.getElementById('resume-file').addEventListener('change', async (e) => {
   if (window._resumeText) area.classList.add('has-file');
 });
 
+// ── AI provider ───────────────────────────────────────────────────────────────
+const PROXY_URL = 'http://127.0.0.1:7337/claude';
+let proxyAvailable = false;
+
+async function checkProxy() {
+  try {
+    const res = await fetch(PROXY_URL, { method: 'OPTIONS', signal: AbortSignal.timeout(500) });
+    proxyAvailable = res.ok || res.status === 204;
+  } catch { proxyAvailable = false; }
+}
+
+function oaiToolsToAnthropic(tools) {
+  return tools.map(t => ({
+    name: t.function.name,
+    description: t.function.description,
+    input_schema: t.function.parameters,
+  }));
+}
+
+function oaiToolChoiceToAnthropic(tc) {
+  if (tc === 'auto') return { type: 'auto' };
+  if (tc?.function?.name) return { type: 'tool', name: tc.function.name };
+  return { type: 'auto' };
+}
+
+function oaiMsgsToAnthropic(msgs) {
+  const system = msgs.find(m => m.role === 'system')?.content;
+  const converted = [];
+  for (const msg of msgs) {
+    if (msg.role === 'system') continue;
+    if (msg.role === 'user') {
+      converted.push({ role: 'user', content: msg.content });
+    } else if (msg.role === 'assistant') {
+      const content = [];
+      if (msg.content) content.push({ type: 'text', text: msg.content });
+      for (const tc of msg.tool_calls || []) {
+        content.push({ type: 'tool_use', id: tc.id, name: tc.function.name,
+          input: JSON.parse(tc.function.arguments || '{}') });
+      }
+      converted.push({ role: 'assistant', content });
+    } else if (msg.role === 'tool') {
+      const result = { type: 'tool_result', tool_use_id: msg.tool_call_id, content: msg.content };
+      const last = converted[converted.length - 1];
+      if (last?.role === 'user' && Array.isArray(last.content)) last.content.push(result);
+      else converted.push({ role: 'user', content: [result] });
+    }
+  }
+  return { system, messages: converted };
+}
+
+async function callApi(msgs, tools, toolChoice) {
+  if (proxyAvailable) {
+    const { system, messages } = oaiMsgsToAnthropic(msgs);
+    const res = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6', system, messages,
+        tools: oaiToolsToAnthropic(tools),
+        tool_choice: oaiToolChoiceToAnthropic(toolChoice),
+        max_tokens: 4096, stream: true,
+      }),
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      if (res.status === 429) throw new Error('Rate limit reached — wait 30 seconds and try again.');
+      throw new Error(`Proxy error (${res.status}): ${txt.slice(0, 200)}`);
+    }
+    return { body: res.body, provider: 'anthropic' };
+  } else {
+    const res = await fetch('https://models.github.ai/inference/chat/completions', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'authorization': `Bearer ${auth.token}` },
+      body: JSON.stringify({
+        model: selectedModel, messages: msgs, tools, tool_choice: toolChoice,
+        max_completion_tokens: 4096, stream: true,
+      }),
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      if (res.status === 429) throw new Error('Rate limit reached — wait 30 seconds and try again, or switch models in the menu above.');
+      if (res.status === 401) throw new Error('GitHub token expired — sign out and reconnect your account.');
+      throw new Error(`Request failed (${res.status}). Try again or switch to demo mode.`);
+    }
+    return { body: res.body, provider: 'openai' };
+  }
+}
+
+async function parseApiResponse(body, provider) {
+  let textContent = '';
+  if (provider === 'anthropic') {
+    const blocks = {};
+    for await (const event of parseSSEStream(body)) {
+      if (event.type === 'content_block_start') {
+        const cb = event.content_block;
+        blocks[event.index] = cb.type === 'tool_use'
+          ? { type: 'tool_use', id: cb.id, name: cb.name, input: '' }
+          : { type: 'text', text: '' };
+      } else if (event.type === 'content_block_delta') {
+        const b = blocks[event.index];
+        if (!b) continue;
+        if (event.delta.type === 'text_delta') { b.text += event.delta.text; textContent += event.delta.text; }
+        else if (event.delta.type === 'input_json_delta') b.input += event.delta.partial_json;
+      }
+    }
+    const toolCalls = Object.values(blocks).filter(b => b.type === 'tool_use')
+      .map(b => ({ id: b.id, name: b.name, arguments: b.input }));
+    return { textContent, toolCalls };
+  } else {
+    const tcMap = {};
+    for await (const chunk of parseSSEStream(body)) {
+      const delta = chunk.choices?.[0]?.delta;
+      if (!delta) continue;
+      if (delta.content) textContent += delta.content;
+      if (delta.tool_calls) {
+        for (const tc of delta.tool_calls) {
+          const e = tcMap[tc.index] ??= { id: '', name: '', arguments: '' };
+          if (tc.id) e.id = tc.id;
+          if (tc.function?.name) e.name = tc.function.name;
+          if (tc.function?.arguments) e.arguments += tc.function.arguments;
+        }
+      }
+    }
+    return { textContent, toolCalls: Object.values(tcMap) };
+  }
+}
+
+async function* parseSSEStream(body) {
+  const reader = body.getReader();
+  const dec = new TextDecoder();
+  let buf = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    const lines = buf.split('\n');
+    buf = lines.pop() ?? '';
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const payload = line.slice(6).trim();
+      if (payload === '[DONE]') return;
+      try { yield JSON.parse(payload); } catch { /**/ }
+    }
+  }
+}
+
 // ── Agent loop ────────────────────────────────────────────────────────────────
 window.submit = async () => {
   const interests = document.getElementById('interests').value.trim();
   const demoMode = document.getElementById('demo-mode').checked;
 
-  if (!auth?.token) return showErr('Please connect your GitHub account first.');
+  await checkProxy();
+  if (!proxyAvailable && !auth?.token) return showErr('Please connect your GitHub account first.');
   if (!interests) return showErr('Please describe your career goal.');
 
   if (!demoMode) {
@@ -1163,44 +1310,10 @@ window.submit = async () => {
         ? { type: 'function', function: { name: 'match_ibm_role' } }
         : 'auto';
       firstCall = false;
-      const res = await fetch('https://models.github.ai/inference/chat/completions', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'authorization': `Bearer ${auth.token}` },
-        body: JSON.stringify({
-          model: selectedModel,
-          messages: msgs,
-          tools: activeTools,
-          tool_choice: toolChoice,
-          max_completion_tokens: 4096,
-          stream: true,
-        }),
-      });
 
-      if (!res.ok) {
-        const txt = await res.text();
-        if (res.status === 429) throw new Error('Rate limit reached — wait 30 seconds and try again, or switch models in the menu above.');
-        if (res.status === 401) throw new Error('GitHub token expired — sign out and reconnect your account.');
-        throw new Error(`Request failed (${res.status}). Try again or switch to demo mode.`);
-      }
+      const { body, provider } = await callApi(msgs, activeTools, toolChoice);
+      const { textContent, toolCalls } = await parseApiResponse(body, provider);
 
-      let textContent = '';
-      const tcMap = {};
-
-      for await (const chunk of parseOpenAIStream(res.body)) {
-        const delta = chunk.choices?.[0]?.delta;
-        if (!delta) continue;
-        if (delta.content) textContent += delta.content;
-        if (delta.tool_calls) {
-          for (const tc of delta.tool_calls) {
-            const e = tcMap[tc.index] ??= { id: '', name: '', arguments: '' };
-            if (tc.id) e.id = tc.id;
-            if (tc.function?.name) e.name = tc.function.name;
-            if (tc.function?.arguments) e.arguments += tc.function.arguments;
-          }
-        }
-      }
-
-      const toolCalls = Object.values(tcMap);
       const assistantMsg = { role: 'assistant', content: textContent || null };
       if (toolCalls.length) {
         assistantMsg.tool_calls = toolCalls.map(tc => ({
@@ -1210,12 +1323,10 @@ window.submit = async () => {
       msgs.push(assistantMsg);
 
       if (!toolCalls.length) {
-        // Final response — parse JSON roadmap
         let text = (textContent || '').trim();
         if (text.startsWith('```')) {
           text = text.split('\n').slice(1).join('\n').replace(/```$/, '').trim();
         }
-        // Extract first {...} block in case the model prefixed with prose
         const jsonBlock = text.match(/\{[\s\S]*\}/);
         if (jsonBlock) text = jsonBlock[0];
         try {
@@ -1247,25 +1358,6 @@ window.submit = async () => {
     btn.textContent = 'Generate my learning roadmap →';
   }
 };
-
-async function* parseOpenAIStream(body) {
-  const reader = body.getReader();
-  const dec = new TextDecoder();
-  let buf = '';
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buf += dec.decode(value, { stream: true });
-    const lines = buf.split('\n');
-    buf = lines.pop() ?? '';
-    for (const line of lines) {
-      if (!line.startsWith('data: ')) continue;
-      const payload = line.slice(6).trim();
-      if (payload === '[DONE]') return;
-      try { yield JSON.parse(payload); } catch { /**/ }
-    }
-  }
-}
 
 // ── UI helpers ────────────────────────────────────────────────────────────────
 const TOOL_SVG = {
