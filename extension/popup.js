@@ -11,4 +11,9 @@ chrome.runtime.sendMessage({ type: 'get-status' }, (s) => {
     s.skillsbuild
       ? `${s.sbCompleted} courses · ${s.sbCredentials} credentials`
       : 'Open SkillsBuild to sync');
+
+  if (s.canvas || s.skillsbuild) {
+    const cta = document.getElementById('cta');
+    cta.style.display = 'flex';
+  }
 });
