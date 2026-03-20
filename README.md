@@ -4,7 +4,8 @@
 
 Built for the [IBM × NCCU AI Hackathon](https://github.com/skillspath/skillspath.github.io) · March 2026
 
-→ **[skillspath.github.io](https://skillspath.github.io)**
+[![Live demo](https://img.shields.io/badge/demo-skillspath.github.io-0f62fe?style=flat-square)](https://skillspath.github.io)
+[![Download extension](https://img.shields.io/github/v/release/skillspath/skillspath.github.io?label=extension&style=flat-square&color=198038)](https://github.com/skillspath/skillspath.github.io/releases/latest)
 
 ---
 

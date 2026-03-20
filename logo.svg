@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="80" fill="#161616"/>
+
+  <!-- Ascending path: three segments stepping up-right like a progress staircase -->
+  <polyline
+    points="96,384  96,272  224,272  224,160  416,160"
+    fill="none"
+    stroke="#0f62fe"
+    stroke-width="52"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Start dot (muted) -->
+  <circle cx="96" cy="384" r="34" fill="#4d5358"/>
+
+  <!-- End dot (bright — the destination) -->
+  <circle cx="416" cy="160" r="34" fill="#ffffff"/>
+</svg>
