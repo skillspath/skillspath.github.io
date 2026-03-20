@@ -128,6 +128,10 @@
     .dropdown-item.active::after { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-left: auto; flex-shrink: 0; }
     .dropdown-sep { height: 1px; background: var(--separator); margin: var(--space-1) 0; }
     .dropdown-item.danger:hover { background: rgba(218,30,40,.12); color: #ff8389; }
+    .dropdown-key-row { padding: var(--space-2) var(--space-4) var(--space-3); }
+    .dropdown-key-row label { display: block; font-size: var(--font-caption); color: var(--label-tertiary); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; margin-bottom: var(--space-1); }
+    .dropdown-key-row input { width: 100%; background: var(--bg); border: 1px solid var(--separator); border-radius: var(--radius-sm); color: var(--label); font-family: var(--font-stack); font-size: var(--font-footnote); padding: 6px var(--space-3); outline: none; }
+    .dropdown-key-row input:focus { border-color: var(--accent); }
 
     /* ── Main layout ── */
     main { max-width: 860px; margin: 0 auto; padding: var(--space-12) var(--space-8) 4rem; overflow-wrap: break-word; }
@@ -554,10 +558,6 @@
       <div class="track"><div class="thumb"></div></div>
       <span class="toggle-label">Use local Claude proxy (127.0.0.1:7337)</span>
     </label>
-    <div id="openai-key-row" style="margin-top:var(--space-3)">
-      <label for="openai-key" style="font-size:var(--font-footnote);color:var(--label-secondary);display:block;margin-bottom:var(--space-1)">OpenAI API key <span style="opacity:.5">(optional — skips GitHub rate limits)</span></label>
-      <input type="password" id="openai-key" placeholder="sk-..." autocomplete="off" oninput="onApiKeyInput(this.value)" />
-    </div>
     <div class="err-bar" id="form-err" role="alert" aria-live="assertive"></div>
     <button class="btn-primary" id="submit-btn" onclick="submit()" disabled>
       Generate my learning roadmap →
@@ -667,10 +667,17 @@ function renderAuth() {
           <div class="dropdown-label">Model</div>
           ${modelItems}
           <div class="dropdown-sep"></div>
+          <div class="dropdown-key-row">
+            <label for="openai-key">OpenAI API key</label>
+            <input type="password" id="openai-key" placeholder="sk-… (bypasses rate limits)" autocomplete="off" oninput="onApiKeyInput(this.value)" />
+          </div>
+          <div class="dropdown-sep"></div>
           <button class="dropdown-item danger" onclick="logout()">Sign out</button>
         </div>
       </div>`;
     gate.style.display = 'none';
+    const savedKey = getOpenAIKey();
+    if (savedKey) setTimeout(() => { const el = document.getElementById('openai-key'); if (el) el.value = savedKey; }, 0);
     updateSubmitBtn();
   } else {
     hdr.innerHTML = `<button class="auth-btn" id="btn-login" onclick="login()">Connect GitHub</button>`;
@@ -679,10 +686,6 @@ function renderAuth() {
   }
 }
 renderAuth();
-
-// Restore saved OpenAI key
-const savedKey = getOpenAIKey();
-if (savedKey) document.getElementById('openai-key').value = savedKey;
 
 document.getElementById('interests').addEventListener('input', updateSubmitBtn);
 
