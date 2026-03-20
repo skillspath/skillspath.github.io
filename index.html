@@ -884,6 +884,7 @@ function addToolCard(id, icon, label, toolName) {
     </div>
     <div class="tc-body"></div>`;
   document.getElementById('tc-cards').appendChild(card);
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function getToolSummary(result, toolName) {
@@ -966,7 +967,9 @@ function showRoadmap(data) {
       </div>`;
     list.appendChild(el);
   });
-  document.getElementById('roadmap').style.display = 'block';
+  const rm = document.getElementById('roadmap');
+  rm.style.display = 'block';
+  setTimeout(() => rm.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 }
 
 function showErr(msg) {
