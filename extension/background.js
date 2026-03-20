@@ -52,10 +52,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 // service worker can. Bridge connects a port; we fetch and stream chunks back.
 
 chrome.runtime.onConnect.addListener((port) => {
+  console.log('[bg] onConnect:', port.name);
   if (!port.name.startsWith('sp-proxy')) return;
 
   port.onMessage.addListener(async (msg) => {
     if (msg.type !== 'sp-proxy-fetch') return;
+    console.log('[bg] fetching:', msg.url);
     try {
       const res = await fetch(msg.url, {
         method: msg.method || 'POST',

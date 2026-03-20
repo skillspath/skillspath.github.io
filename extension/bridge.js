@@ -39,10 +39,21 @@ window.addEventListener('message', (event) => {
   // Relay fetch requests through the background service worker (bypasses PNA)
   if (event.data?.type === 'sp-proxy-fetch') {
     const { id } = event.data;
-    const port = chrome.runtime.connect({ name: 'sp-proxy-' + id });
-    port.postMessage(event.data);
-    port.onMessage.addListener((msg) => {
-      window.postMessage({ ...msg, id }, '*');
-    });
+    console.log('[bridge] sp-proxy-fetch received, connecting port:', 'sp-proxy-' + id);
+    try {
+      const port = chrome.runtime.connect({ name: 'sp-proxy-' + id });
+      console.log('[bridge] port connected');
+      port.onDisconnect.addListener(() => {
+        console.log('[bridge] port disconnected — runtime error:', chrome.runtime.lastError?.message);
+      });
+      port.postMessage(event.data);
+      port.onMessage.addListener((msg) => {
+        console.log('[bridge] port message:', msg.type);
+        window.postMessage({ ...msg, id }, '*');
+      });
+    } catch (e) {
+      console.error('[bridge] connect failed:', e.message);
+      window.postMessage({ type: 'sp-proxy-error', id, error: e.message }, '*');
+    }
   }
 });
