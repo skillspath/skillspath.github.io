@@ -339,6 +339,15 @@
     .rm-header { margin-bottom: var(--space-6); }
     .rm-header h2 { font-size: var(--font-title3); font-weight: 600; margin-bottom: var(--space-2); }
     .rm-summary { font-size: var(--font-body); color: var(--label-secondary); line-height: 1.6; }
+    .rm-role-pill {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      background: rgba(159,24,83,.15); border: 1px solid rgba(159,24,83,.4);
+      border-radius: var(--radius-sm); padding: var(--space-1) var(--space-3);
+      font-size: var(--font-caption); font-weight: 600; color: #ff7eb6;
+      text-decoration: none; margin-bottom: var(--space-3);
+      transition: background .15s var(--ease);
+    }
+    .rm-role-pill:hover { background: rgba(159,24,83,.28); }
     .gap-row { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
     .gap-tag {
       background: rgba(105,41,196,.2); border: 1px solid rgba(105,41,196,.5);
@@ -531,6 +540,7 @@
   <div id="roadmap">
     <div class="rm-header">
       <h2>Your IBM SkillsBuild Roadmap</h2>
+      <div id="rm-role-pill"></div>
       <p class="rm-summary" id="rm-summary"></p>
       <div class="gap-row" id="rm-gaps"></div>
     </div>
@@ -952,6 +962,7 @@ async function executeTool(name, args, demoMode) {
     const interests = document.getElementById('interests').value.trim();
     const role = matchIBMRole(interests);
     if (!role) return { error: 'No matching IBM role found.' };
+    window._matchedRole = role;
     return {
       role_title: role.title,
       team: role.team,
@@ -1007,6 +1018,7 @@ Output ONLY this JSON when ready (no prose, no code fences):
 
 // ── Resume parsing ────────────────────────────────────────────────────────────
 window._resumeText = null;
+window._matchedRole = null;
 
 document.getElementById('resume-file').addEventListener('change', async (e) => {
   const file = e.target.files[0];
@@ -1066,6 +1078,8 @@ window.submit = async () => {
   document.getElementById('rm-list').innerHTML = '';
   document.getElementById('rm-gaps').innerHTML = '';
   document.getElementById('rm-summary').textContent = '';
+  document.getElementById('rm-role-pill').innerHTML = '';
+  window._matchedRole = null;
   document.getElementById('agent-panel').style.display = 'none';
   document.getElementById('profile-card').style.display = 'none';
   document.getElementById('roadmap').style.display = 'none';
@@ -1301,6 +1315,15 @@ function showProfileCard(name, bio, courses, grades) {
 }
 
 function showRoadmap(data) {
+  const pillEl = document.getElementById('rm-role-pill');
+  if (window._matchedRole) {
+    pillEl.innerHTML = `<a class="rm-role-pill" href="${window._matchedRole.url}" target="_blank" rel="noopener">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+      ${window._matchedRole.title} · View on IBM Careers ↗
+    </a>`;
+  } else {
+    pillEl.innerHTML = '';
+  }
   document.getElementById('rm-summary').textContent = data.summary || '';
   const gaps = document.getElementById('rm-gaps');
   (data.skill_gaps || []).forEach(g => {
