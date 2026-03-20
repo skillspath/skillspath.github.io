@@ -47,6 +47,44 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   return true; // keep channel open for async
 });
 
+// ── Proxy relay ──────────────────────────────────────────────────────────────
+// The page can't reach localhost from https:// (Chrome PNA). The background
+// service worker can. Bridge connects a port; we fetch and stream chunks back.
+
+chrome.runtime.onConnect.addListener((port) => {
+  if (!port.name.startsWith('sp-proxy')) return;
+
+  port.onMessage.addListener(async (msg) => {
+    if (msg.type !== 'sp-proxy-fetch') return;
+    try {
+      const res = await fetch(msg.url, {
+        method: msg.method || 'POST',
+        headers: msg.headers || {},
+        body: msg.body,
+      });
+
+      port.postMessage({ type: 'sp-proxy-status', status: res.status, ok: res.ok });
+
+      if (!res.ok) {
+        const text = await res.text();
+        port.postMessage({ type: 'sp-proxy-error', error: text });
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        port.postMessage({ type: 'sp-proxy-chunk', chunk: dec.decode(value, { stream: true }) });
+      }
+      port.postMessage({ type: 'sp-proxy-done' });
+    } catch (e) {
+      port.postMessage({ type: 'sp-proxy-error', error: e.message });
+    }
+  });
+});
+
 function persist() {
   chrome.storage.local.set({
     canvas:         store.canvas,

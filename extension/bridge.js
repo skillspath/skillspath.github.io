@@ -35,4 +35,14 @@ window.addEventListener('message', (event) => {
       window.postMessage({ type: 'sp-health', data: buildHealth(stored) }, '*');
     });
   }
+
+  // Relay fetch requests through the background service worker (bypasses PNA)
+  if (event.data?.type === 'sp-proxy-fetch') {
+    const { id } = event.data;
+    const port = chrome.runtime.connect({ name: 'sp-proxy-' + id });
+    port.postMessage(event.data);
+    port.onMessage.addListener((msg) => {
+      window.postMessage({ ...msg, id }, '*');
+    });
+  }
 });
