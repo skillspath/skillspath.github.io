@@ -45,18 +45,19 @@
     ]);
 
     // Normalise completed courses from whichever endpoint responded
-    const rawPlans = plans?.items || plans?.data || (Array.isArray(plans) ? plans : []);
-    const rawTranscripts = transcripts?.rawTranscripts || transcripts?.items || transcripts?.data || (Array.isArray(transcripts) ? transcripts : []);
+    // API returns { data: { transcriptRecords: [...] } }
+    const rawTranscripts = transcripts?.data?.transcriptRecords || transcripts?.rawTranscripts || transcripts?.items || (Array.isArray(transcripts) ? transcripts : []);
+    const rawPlans = plans?.data?.transcriptRecords || plans?.items || (Array.isArray(plans) ? plans : []);
 
-    const completedCourses = [...(Array.isArray(rawPlans) ? rawPlans : []), ...(Array.isArray(rawTranscripts) ? rawTranscripts : [])]
+    const completedCourses = [...(Array.isArray(rawTranscripts) ? rawTranscripts : []), ...(Array.isArray(rawPlans) ? rawPlans : [])]
       .filter(item => {
-        const s = (item.status || item.completionStatus || '').toUpperCase();
+        const s = (item.learnerTranscriptStatus || item.status || item.completionStatus || '').toUpperCase();
         return s === 'COMPLETED' || s === 'PASSED';
       })
       .map(item => ({
-        id:          item.lmsId        || item.id          || '',
-        title:       item.title        || item.name        || item.assetTitle || '',
-        completedAt: item.completedTime || item.completedAt || item.completionDate || null,
+        id:          item.learningActivityID || item.ID || item.id || '',
+        title:       item.learningActivityTitle || item.title || item.name || '',
+        completedAt: item.learningCompletedDate || item.completedDate || item.completedTime || null,
       }))
       .filter((c, i, arr) => c.title && arr.findIndex(x => x.id === c.id) === i); // dedupe
 
