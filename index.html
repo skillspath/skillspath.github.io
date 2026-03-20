@@ -1101,13 +1101,16 @@ document.getElementById('resume-file').addEventListener('change', async (e) => {
 });
 
 // ── AI provider ───────────────────────────────────────────────────────────────
-const PROXY_URL = 'http://127.0.0.1:7337/claude';
+const PROXY_URL = 'http://127.0.0.1:7337/v1/messages';
 let proxyAvailable = false;
 
 async function checkProxy() {
   try {
-    const res = await fetch(PROXY_URL, { method: 'OPTIONS', signal: AbortSignal.timeout(500) });
-    proxyAvailable = res.ok || res.status === 204;
+    const ac = new AbortController();
+    setTimeout(() => ac.abort(), 2000);
+    const res = await fetch(PROXY_URL, { method: 'POST', signal: ac.signal,
+      headers: { 'content-type': 'application/json' }, body: '{}' });
+    proxyAvailable = res.status < 500; // 400 = reachable but bad body; 5xx = down
   } catch { proxyAvailable = false; }
 }
 
