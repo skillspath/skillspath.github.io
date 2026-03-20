@@ -117,23 +117,80 @@
       font-size: .875rem; line-height: 1.5; margin-bottom: 1rem; display: none;
     }
 
-    /* progress */
-    #progress { display: none; }
-    .step-list { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
-    .step-list li { display: flex; align-items: center; gap: .625rem; font-size: .875rem; color: #a8b2bd; }
-    .s-icon { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: .625rem; }
-    .s-icon.done { background: var(--green); }
-    .s-icon.active { border: 2px solid var(--blue); animation: pulse 1s infinite; }
+    /* agent panel */
+    #agent-panel { display: none; margin-bottom: 1.25rem; }
+    #agent-panel h2 { font-size: .9375rem; font-weight: 600; color: var(--g30); margin-bottom: .875rem; }
+    .tc-cards { display: flex; flex-direction: column; gap: .5rem; }
 
-    /* courses */
-    #courses-section { display: none; }
-    .chips { display: flex; flex-wrap: wrap; gap: .4375rem; }
-    .chip {
-      background: var(--g80); border-radius: 2px;
-      padding: .2rem .5625rem; font-size: .6875rem; color: var(--g20); font-family: var(--mono);
+    .tc-card {
+      background: var(--g90); border: 1px solid var(--g80); border-radius: var(--r);
+      overflow: hidden; animation: fadeUp .2s ease forwards;
     }
-    .chip.done { border-left: 2px solid var(--green); }
-    .chip.active { border-left: 2px solid var(--blue); }
+    .tc-header {
+      display: flex; align-items: center; gap: .75rem; padding: .75rem 1rem;
+    }
+    .tc-icon {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: .875rem;
+      background: var(--g80);
+    }
+    .tc-card.pending .tc-icon { border: 2px solid var(--blue); background: transparent; animation: pulse 1s infinite; }
+    .tc-card.done .tc-icon { background: var(--green); }
+    .tc-label { font-size: .875rem; font-weight: 600; flex: 1; }
+    .tc-status { font-size: .6875rem; color: #6f7880; font-family: var(--mono); }
+    .tc-card.done .tc-status { color: var(--green); }
+
+    .tc-body {
+      padding: 0 1rem .875rem 3.5rem; font-size: .8125rem; color: #a8b2bd; line-height: 1.5;
+      display: none;
+    }
+    .tc-card.done .tc-body { display: block; }
+    .tc-body strong { color: var(--white); font-weight: 600; }
+    .tc-result-chips { display: flex; flex-wrap: wrap; gap: .375rem; margin-top: .4rem; }
+    .tc-chip {
+      font-family: var(--mono); font-size: .6875rem; padding: .15rem .5rem;
+      border-radius: 2px; background: var(--g80); color: var(--g20);
+    }
+    .tc-chip.grade-a  { background: rgba(25,128,56,.2);  color: #42be65; }
+    .tc-chip.grade-b  { background: rgba(15,98,254,.2);  color: #78a9ff; }
+    .tc-chip.grade-c  { background: rgba(243,154,0,.2);  color: #f6c324; }
+
+    /* profile card */
+    #profile-card { display: none; margin-bottom: 1.25rem; }
+    .profile-inner {
+      background: linear-gradient(135deg, #1d2a3e 0%, var(--g90) 100%);
+      border: 1px solid rgba(15,98,254,.3); border-radius: var(--r); padding: 1.5rem;
+      position: relative; overflow: hidden;
+    }
+    .profile-inner::before {
+      content: ''; position: absolute; top: -40px; right: -40px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: rgba(15,98,254,.08);
+    }
+    .profile-live {
+      display: inline-flex; align-items: center; gap: .375rem;
+      font-size: .6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--green); margin-bottom: .75rem;
+    }
+    .profile-live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .profile-name { font-size: 1.5rem; font-weight: 300; margin-bottom: .25rem; }
+    .profile-name strong { font-weight: 600; }
+    .profile-meta { font-size: .8125rem; color: #6f7880; margin-bottom: 1.125rem; }
+    .profile-courses { display: flex; flex-wrap: wrap; gap: .4375rem; }
+    .grade-chip {
+      font-family: var(--mono); font-size: .6875rem; padding: .25rem .625rem;
+      border-radius: 2px; display: flex; align-items: center; gap: .375rem;
+    }
+    .grade-chip .code { color: var(--g20); }
+    .grade-chip .grade { font-weight: 700; }
+    .grade-chip.a  { background: rgba(25,128,56,.15);  border: 1px solid rgba(25,128,56,.3); }
+    .grade-chip.a .grade  { color: #42be65; }
+    .grade-chip.b  { background: rgba(15,98,254,.12);  border: 1px solid rgba(15,98,254,.3); }
+    .grade-chip.b .grade  { color: #78a9ff; }
+    .grade-chip.c  { background: rgba(243,154,0,.12);  border: 1px solid rgba(243,154,0,.3); }
+    .grade-chip.c .grade  { color: #f6c324; }
+    .grade-chip.ng { background: var(--g80); border: 1px solid var(--g80); }
+    .grade-chip.ng .grade { color: #6f7880; }
 
     /* roadmap */
     #roadmap { display: none; }
@@ -238,14 +295,18 @@
     </button>
   </div>
 
-  <div class="card" id="progress">
-    <h2>Analyzing your profile</h2>
-    <ul class="step-list" id="steps"></ul>
+  <div id="agent-panel">
+    <h2>Agent activity</h2>
+    <div class="tc-cards" id="tc-cards"></div>
   </div>
 
-  <div class="card" id="courses-section">
-    <h2>Courses detected from Canvas</h2>
-    <div class="chips" id="chips"></div>
+  <div id="profile-card">
+    <div class="profile-inner">
+      <div class="profile-live">Live · Canvas data</div>
+      <div class="profile-name" id="profile-name"><strong>Student</strong></div>
+      <div class="profile-meta" id="profile-meta"></div>
+      <div class="profile-courses" id="profile-courses"></div>
+    </div>
   </div>
 
   <div id="roadmap">
@@ -320,7 +381,7 @@ function renderStatus(d) {
   const txt = document.getElementById('status-txt');
   if (!d) {
     bar.className = 'status-bar err';
-    txt.textContent = 'Extension not detected. Reload the extension in chrome://extensions, then refresh this page.';
+    txt.textContent = 'Extension not detected — install the SkillsPath Chrome extension, then refresh.';
     return;
   }
   const parts = [];
@@ -425,7 +486,7 @@ async function getCanvasData(demoMode) {
     return _canvasCache;
   }
   const d = await postMessageRequest('sp-get-data', 'sp-data');
-  if (!d) throw new Error('Extension bridge not responding. Is the extension loaded and index.html served from localhost?');
+  if (!d) throw new Error('Extension bridge not detected. Install the SkillsPath Chrome extension, then visit Canvas or SkillsBuild to sync your data.');
   _canvasCache = d;
   return _canvasCache;
 }
@@ -503,7 +564,8 @@ async function executeTool(name, args, demoMode) {
     const data = await getCanvasData(demoMode);
     const courses = data.courses || [];
     const grades = data.grades || {};
-    showCourses(courses);
+    const profile = data.userProfile || {};
+    showProfileCard(profile.name || 'Student', profile.bio || '', courses, grades);
     return { courses_text: fmtCourses(courses, grades), count: courses.length };
   }
   if (name === 'fetch_skillsbuild_history') {
@@ -563,16 +625,14 @@ window.submit = async () => {
   btn.disabled = true;
   btn.textContent = 'Analyzing…';
 
-  document.getElementById('steps').innerHTML = '';
-  document.getElementById('chips').innerHTML = '';
+  document.getElementById('tc-cards').innerHTML = '';
+  document.getElementById('profile-courses').innerHTML = '';
   document.getElementById('rm-list').innerHTML = '';
   document.getElementById('rm-gaps').innerHTML = '';
   document.getElementById('rm-summary').textContent = '';
-  document.getElementById('progress').style.display = 'block';
-  document.getElementById('courses-section').style.display = 'none';
+  document.getElementById('agent-panel').style.display = 'none';
+  document.getElementById('profile-card').style.display = 'none';
   document.getElementById('roadmap').style.display = 'none';
-
-  addStep('Starting analysis…');
 
   const msgs = [
     { role: 'system', content: SYSTEM },
@@ -643,12 +703,9 @@ window.submit = async () => {
       for (const tc of toolCalls) {
         let args = {};
         try { args = JSON.parse(tc.arguments || '{}'); } catch { /**/ }
-        const toolLabel = tc.name === 'fetch_canvas_profile' ? 'Fetching your Canvas profile…'
-          : tc.name === 'fetch_canvas_courses' ? 'Fetching your Canvas course history…'
-          : tc.name === 'fetch_skillsbuild_history' ? 'Fetching your IBM SkillsBuild progress…'
-          : `Searching IBM SkillsBuild catalog: "${args.query || ''}"…`;
-        addStep(toolLabel);
+        addToolCard(tc.id, getToolIcon(tc.name), getToolLabel(tc.name, args));
         const result = await executeTool(tc.name, args, demoMode);
+        completeToolCard(tc.id, result, tc.name);
         msgs.push({ role: 'tool', tool_call_id: tc.id, content: JSON.stringify(result) });
       }
     }
@@ -657,10 +714,6 @@ window.submit = async () => {
   } finally {
     btn.disabled = false;
     btn.textContent = 'Generate my learning roadmap →';
-    // Mark all steps done
-    document.querySelectorAll('.s-icon.active').forEach(el => {
-      el.className = 's-icon done'; el.textContent = '✓';
-    });
   }
 };
 
@@ -684,28 +737,84 @@ async function* parseOpenAIStream(body) {
 }
 
 // ── UI helpers ────────────────────────────────────────────────────────────────
-function addStep(msg) {
-  const list = document.getElementById('steps');
-  const prev = list.querySelector('.s-icon.active');
-  if (prev) { prev.className = 's-icon done'; prev.textContent = '✓'; }
-  const li = document.createElement('li');
-  li.innerHTML = `<div class="s-icon active"></div><span>${msg}</span>`;
-  list.appendChild(li);
+function getToolIcon(name) {
+  if (name === 'fetch_canvas_profile')    return '👤';
+  if (name === 'fetch_canvas_courses')    return '📚';
+  if (name === 'fetch_skillsbuild_history') return '🏆';
+  return '🔍';
 }
 
-function showCourses(courses) {
-  const sec = document.getElementById('courses-section');
-  const chips = document.getElementById('chips');
-  chips.innerHTML = '';
-  courses.forEach(c => {
+function getToolLabel(name, args) {
+  if (name === 'fetch_canvas_profile')    return 'Canvas Profile';
+  if (name === 'fetch_canvas_courses')    return 'Canvas Courses';
+  if (name === 'fetch_skillsbuild_history') return 'SkillsBuild History';
+  return `Catalog: "${args.query || ''}"`;
+}
+
+function addToolCard(id, icon, label) {
+  const panel = document.getElementById('agent-panel');
+  panel.style.display = 'block';
+  const card = document.createElement('div');
+  card.className = 'tc-card pending';
+  card.id = `tc-${CSS.escape(id)}`;
+  card.innerHTML = `
+    <div class="tc-header">
+      <div class="tc-icon">${icon}</div>
+      <div class="tc-label">${label}</div>
+      <div class="tc-status">running…</div>
+    </div>
+    <div class="tc-body"></div>`;
+  document.getElementById('tc-cards').appendChild(card);
+}
+
+function getToolSummary(result, toolName) {
+  if (toolName === 'fetch_canvas_profile') {
+    return `<strong>${result.name || 'Student'}</strong>${result.bio ? ' — ' + result.bio : ''}`;
+  }
+  if (toolName === 'fetch_canvas_courses') {
+    return `<strong>${result.count}</strong> courses loaded`;
+  }
+  if (toolName === 'fetch_skillsbuild_history') {
+    const completed = (result.completed_courses || '').split('\n').filter(l => l.trim().startsWith('-')).length;
+    const hasCreds = (result.credentials || '').includes('- ');
+    return `${completed > 0 ? `<strong>${completed}</strong> completed courses` : 'No completed courses yet'}${hasCreds ? ' · credentials found' : ''}`;
+  }
+  // catalog search
+  const chips = (result.results || '').split('\n')
+    .filter(l => l.startsWith('- '))
+    .map(l => { const title = l.replace(/^- \[[^\]]+\] /, '').split(' (')[0]; return `<span class="tc-chip">${title}</span>`; })
+    .join('');
+  return `<strong>${result.count}</strong> matches<div class="tc-result-chips">${chips}</div>`;
+}
+
+function completeToolCard(id, result, toolName) {
+  const card = document.getElementById(`tc-${CSS.escape(id)}`);
+  if (!card) return;
+  card.className = 'tc-card done';
+  card.querySelector('.tc-status').textContent = '✓ done';
+  card.querySelector('.tc-body').innerHTML = getToolSummary(result, toolName);
+}
+
+function showProfileCard(name, bio, courses, grades) {
+  document.getElementById('profile-name').innerHTML = `<strong>${name}</strong>`;
+  document.getElementById('profile-meta').textContent = bio || '';
+  const container = document.getElementById('profile-courses');
+  container.innerHTML = '';
+  (courses || []).forEach(c => {
+    const cid = String(c.id || '');
+    const g = grades?.[cid];
+    const grade = g ? (g.currentGrade || g.finalGrade || '') : '';
+    const gradeClass = !grade ? 'ng'
+      : grade.startsWith('A') ? 'a'
+      : grade.startsWith('B') ? 'b'
+      : grade.startsWith('C') ? 'c' : 'ng';
     const el = document.createElement('div');
-    const state = c.workflow_state || '';
-    el.className = `chip ${state === 'completed' || state === 'concluded' ? 'done' : 'active'}`;
-    el.textContent = c.course_code || c.name;
+    el.className = `grade-chip ${gradeClass}`;
+    el.innerHTML = `<span class="code">${c.course_code || c.name.slice(0, 8)}</span><span class="grade">${grade || '—'}</span>`;
     el.title = c.name;
-    chips.appendChild(el);
+    container.appendChild(el);
   });
-  sec.style.display = 'block';
+  document.getElementById('profile-card').style.display = 'block';
 }
 
 function showRoadmap(data) {
