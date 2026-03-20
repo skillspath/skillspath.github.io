@@ -46,9 +46,9 @@
 
     // Normalise completed courses from whichever endpoint responded
     const rawPlans = plans?.items || plans?.data || (Array.isArray(plans) ? plans : []);
-    const rawTranscripts = transcripts?.items || transcripts?.data || (Array.isArray(transcripts) ? transcripts : []);
+    const rawTranscripts = transcripts?.rawTranscripts || transcripts?.items || transcripts?.data || (Array.isArray(transcripts) ? transcripts : []);
 
-    const completedCourses = [...rawPlans, ...rawTranscripts]
+    const completedCourses = [...(Array.isArray(rawPlans) ? rawPlans : []), ...(Array.isArray(rawTranscripts) ? rawTranscripts : [])]
       .filter(item => {
         const s = (item.status || item.completionStatus || '').toUpperCase();
         return s === 'COMPLETED' || s === 'PASSED';
@@ -60,7 +60,7 @@
       }))
       .filter((c, i, arr) => c.title && arr.findIndex(x => x.id === c.id) === i); // dedupe
 
-    const rawCreds = credentials?.items || credentials?.data || (Array.isArray(credentials) ? credentials : []);
+    const rawCreds = credentials?.rawTranscripts || credentials?.items || credentials?.data || (Array.isArray(credentials) ? credentials : []);
     const credentialsArr = rawCreds
       .map(c => ({
         id:       c.credentialId    || c.id    || '',
