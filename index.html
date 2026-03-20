@@ -587,11 +587,6 @@
       <div class="track"><div class="thumb"></div></div>
       <span class="toggle-label">Try with sample student — no Canvas account needed</span>
     </label>
-    <label class="toggle-row" id="proxy-row" style="display:none">
-      <input type="checkbox" id="proxy-toggle" onchange="onProxyToggle(this.checked)" />
-      <div class="track"><div class="thumb"></div></div>
-      <span class="toggle-label">Use local Claude proxy (localhost:7337)</span>
-    </label>
     <div class="wx-section" id="wx-section">
       <div class="wx-header">
         <svg width="14" height="14" viewBox="0 0 32 32" fill="currentColor" style="flex-shrink:0"><path d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2zm0 2c6.627 0 12 5.373 12 12S22.627 28 16 28 4 22.627 4 16 9.373 4 16 4z"/><circle cx="16" cy="16" r="5"/></svg>
@@ -651,14 +646,11 @@
 import { connectGitHub } from 'https://neevs.io/auth/connect.js';
 
 // ── AI provider constants (needed before renderAuth) ─────────────────────────
-const PROXY_URL = 'http://localhost:7337/v1/messages';
-const PROXY_KEY = 'sp-use-proxy';
 const OAIKEY_KEY = 'sp-openai-key';
 const WX_APIKEY_KEY = 'sp-wx-apikey';
 const WX_PROJECT_KEY = 'sp-wx-project';
 const WX_ENDPOINT = 'http://localhost:7337/watsonx';  // proxy handles IAM server-side
 
-function useProxy() { return localStorage.getItem(PROXY_KEY) === 'true'; }
 function getOpenAIKey() { return localStorage.getItem(OAIKEY_KEY) || ''; }
 function getWatsonxApiKey() { return localStorage.getItem(WX_APIKEY_KEY) || ''; }
 function getWatsonxProjectId() { return localStorage.getItem(WX_PROJECT_KEY) || ''; }
@@ -667,9 +659,6 @@ function useWatsonx() { return !!(getWatsonxApiKey() && getWatsonxProjectId()); 
 window.onApiKeyInput = (val) => {
   localStorage.setItem(OAIKEY_KEY, val.trim());
   updateSubmitBtn();
-};
-window.onProxyToggle = (checked) => {
-  localStorage.setItem(PROXY_KEY, String(checked));
 };
 // ── Extension proxy relay ─────────────────────────────────────────────────────
 // Routes fetch calls through the extension background worker to bypass PNA.
@@ -732,7 +721,7 @@ window.onWatsonxProjectInput = (val) => {
 function updateSubmitBtn() {
   const btn = document.getElementById('submit-btn');
   const hasGoal = !!document.getElementById('interests')?.value.trim();
-  const hasAuth = useWatsonx() || useProxy() || !!getOpenAIKey() || !!auth?.token;
+  const hasAuth = useWatsonx() || !!getOpenAIKey() || !!auth?.token;
   if (btn) btn.disabled = !(hasGoal && hasAuth);
 }
 
@@ -881,16 +870,8 @@ function renderStatus(d) {
 let _statusRendered = false;
 window.addEventListener('message', (event) => {
   if (event.data?.type === 'sp-health') {
-    const firstDetection = !_extensionAvailable;
     _extensionAvailable = true;
     if (!_statusRendered) { _statusRendered = true; renderStatus(event.data.data); }
-    // Re-probe proxy now that the extension relay is available
-    if (firstDetection) checkProxy().then(available => {
-      if (available) {
-        const row = document.getElementById('proxy-row');
-        if (row) { row.style.display = ''; document.getElementById('proxy-toggle').checked = useProxy(); }
-      }
-    });
   }
 });
 setTimeout(async () => {
@@ -908,14 +889,6 @@ setTimeout(async () => {
   }
 }, 2000);
 
-// Probe proxy on load; show toggle if reachable
-checkProxy().then(available => {
-  if (available) {
-    const row = document.getElementById('proxy-row');
-    row.style.display = '';
-    document.getElementById('proxy-toggle').checked = useProxy();
-  }
-});
 
 document.getElementById('demo-mode').addEventListener('change', function () {
   const bar = document.getElementById('status-bar');
@@ -1288,52 +1261,6 @@ document.getElementById('resume-file').addEventListener('change', async (e) => {
 });
 
 // ── AI provider ───────────────────────────────────────────────────────────────
-async function checkProxy() {
-  try {
-    const res = await localFetch(PROXY_URL, { method: 'POST',
-      headers: { 'content-type': 'application/json' }, body: '{}' });
-    return res.status < 500;
-  } catch { return false; }
-}
-
-function oaiToolsToAnthropic(tools) {
-  return tools.map(t => ({
-    name: t.function.name,
-    description: t.function.description,
-    input_schema: t.function.parameters,
-  }));
-}
-
-function oaiToolChoiceToAnthropic(tc) {
-  if (tc === 'auto') return { type: 'auto' };
-  if (tc?.function?.name) return { type: 'tool', name: tc.function.name };
-  return { type: 'auto' };
-}
-
-function oaiMsgsToAnthropic(msgs) {
-  const system = msgs.find(m => m.role === 'system')?.content;
-  const converted = [];
-  for (const msg of msgs) {
-    if (msg.role === 'system') continue;
-    if (msg.role === 'user') {
-      converted.push({ role: 'user', content: msg.content });
-    } else if (msg.role === 'assistant') {
-      const content = [];
-      if (msg.content) content.push({ type: 'text', text: msg.content });
-      for (const tc of msg.tool_calls || []) {
-        content.push({ type: 'tool_use', id: tc.id, name: tc.function.name,
-          input: JSON.parse(tc.function.arguments || '{}') });
-      }
-      converted.push({ role: 'assistant', content });
-    } else if (msg.role === 'tool') {
-      const result = { type: 'tool_result', tool_use_id: msg.tool_call_id, content: msg.content };
-      const last = converted[converted.length - 1];
-      if (last?.role === 'user' && Array.isArray(last.content)) last.content.push(result);
-      else converted.push({ role: 'user', content: [result] });
-    }
-  }
-  return { system, messages: converted };
-}
 
 async function callApi(msgs, tools, toolChoice) {
   while (true) {
@@ -1352,19 +1279,6 @@ async function callApi(msgs, tools, toolChoice) {
         }),
       });
       provider = 'openai'; // watsonx response format is OpenAI-compatible
-    } else if (useProxy()) {
-      const { system, messages } = oaiMsgsToAnthropic(msgs);
-      res = await localFetch(PROXY_URL, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-6', system, messages,
-          tools: oaiToolsToAnthropic(tools),
-          tool_choice: oaiToolChoiceToAnthropic(toolChoice),
-          max_tokens: 4096, stream: true,
-        }),
-      });
-      provider = 'anthropic';
     } else {
       const oaiKey = getOpenAIKey();
       const token = oaiKey || auth?.token;
@@ -1466,7 +1380,7 @@ window.submit = async () => {
   const interests = document.getElementById('interests').value.trim();
   const demoMode = document.getElementById('demo-mode').checked;
 
-  if (!useProxy() && !getOpenAIKey() && !auth?.token) return showErr('Please connect your GitHub account first.');
+  if (!useWatsonx() && !getOpenAIKey() && !auth?.token) return showErr('Please connect your GitHub account first.');
   if (!interests) return showErr('Please describe your career goal.');
 
   if (!demoMode) {
