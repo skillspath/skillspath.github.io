@@ -19,18 +19,8 @@ The advisor reasons through your background step by step, calling tools to fetch
 
 ## Architecture
 
-```
-Canvas LMS          IBM SkillsBuild        skillspath.github.io
-   │                      │                        │
-content-canvas.js   content-skillsbuild.js         │
-   │                      │                        │
-   └──── background.js (service worker) ───────────┤
-                                              bridge.js
-                                         (postMessage relay)
-                                                   │
-                                          index.html + AI agent
-                                       (GitHub Models / GPT-4.1)
-```
+<img width="1408" height="768" alt="image" src="https://github.com/user-attachments/assets/a953bd88-53e4-4f96-88ef-f09ed5b41227" />
+
 
 - **Chrome Extension (MV3)** — runs content scripts on Canvas and IBM SkillsBuild, captures course history and credentials into `chrome.storage.local`, exposes it to the page via a postMessage bridge.
 - **Single-page app** — pure HTML + CSS + JS, no build step, deployed via GitHub Pages.
