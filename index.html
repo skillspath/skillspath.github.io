@@ -590,7 +590,7 @@
     <label class="toggle-row" id="proxy-row" style="display:none">
       <input type="checkbox" id="proxy-toggle" onchange="onProxyToggle(this.checked)" />
       <div class="track"><div class="thumb"></div></div>
-      <span class="toggle-label">Use local Claude proxy (127.0.0.1:7337)</span>
+      <span class="toggle-label">Use local Claude proxy (localhost:7337)</span>
     </label>
     <div class="wx-section" id="wx-section">
       <div class="wx-header">
@@ -651,12 +651,12 @@
 import { connectGitHub } from 'https://neevs.io/auth/connect.js';
 
 // ── AI provider constants (needed before renderAuth) ─────────────────────────
-const PROXY_URL = 'http://127.0.0.1:7337/v1/messages';
+const PROXY_URL = 'http://localhost:7337/v1/messages';
 const PROXY_KEY = 'sp-use-proxy';
 const OAIKEY_KEY = 'sp-openai-key';
 const WX_APIKEY_KEY = 'sp-wx-apikey';
 const WX_PROJECT_KEY = 'sp-wx-project';
-const WX_ENDPOINT = 'http://127.0.0.1:7337/watsonx';  // proxy handles IAM server-side
+const WX_ENDPOINT = 'http://localhost:7337/watsonx';  // proxy handles IAM server-side
 
 function useProxy() { return localStorage.getItem(PROXY_KEY) === 'true'; }
 function getOpenAIKey() { return localStorage.getItem(OAIKEY_KEY) || ''; }
