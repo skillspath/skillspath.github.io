@@ -15,15 +15,15 @@
       --danger:       #da1e28;
       --purple:       #6929c4;
 
-      /* Surfaces — dark */
+      /* Surfaces — dark (slightly lifted for projector legibility) */
       --bg:              #161616;
-      --surface:         #1e1e1e;
-      --surface-raised:  #242424;
+      --surface:         #222222;
+      --surface-raised:  #2c2c2c;
 
-      /* Text */
+      /* Text — boosted for projector contrast */
       --label:           #ffffff;
-      --label-secondary: rgba(255,255,255,0.55);
-      --label-tertiary:  rgba(255,255,255,0.32);
+      --label-secondary: rgba(255,255,255,0.75);
+      --label-tertiary:  rgba(255,255,255,0.45);
 
       /* Separator */
       --separator: rgba(255,255,255,0.08);
@@ -85,7 +85,8 @@
       background: var(--accent); border: none; color: var(--label);
       font-family: var(--font-stack); font-size: var(--font-subhead); font-weight: 600;
       padding: var(--space-2) var(--space-4); border-radius: var(--radius-sm); cursor: pointer;
-      min-height: 36px; transition: background 0.15s var(--ease);
+      min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s var(--ease);
     }
     .auth-btn:hover { background: var(--accent-hover); }
 
@@ -95,7 +96,8 @@
       display: flex; align-items: center; gap: var(--space-2);
       background: transparent; border: 1px solid var(--separator); border-radius: var(--radius-sm);
       color: var(--label-secondary); font-family: var(--font-stack); font-size: var(--font-footnote); font-weight: 500;
-      padding: var(--space-1) var(--space-3); cursor: pointer; min-height: 32px;
+      padding: var(--space-1) var(--space-3); cursor: pointer; min-height: 44px;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
       transition: border-color .15s var(--ease), color .15s var(--ease);
     }
     .user-btn:hover { border-color: rgba(255,255,255,0.25); color: var(--label); }
@@ -116,9 +118,9 @@
       color: var(--label-tertiary); padding: var(--space-3) var(--space-4) var(--space-1);
     }
     .dropdown-item {
-      display: flex; align-items: center; gap: var(--space-2); min-height: 36px;
+      display: flex; align-items: center; gap: var(--space-2); min-height: 44px;
       padding: var(--space-2) var(--space-4); font-size: var(--font-subhead); color: var(--label-secondary);
-      cursor: pointer; transition: background .1s, color .1s;
+      cursor: pointer; transition: background .1s, color .1s; touch-action: manipulation;
       background: transparent; border: none; width: 100%; text-align: left; font-family: var(--font-stack);
     }
     .dropdown-item:hover { background: rgba(255,255,255,0.06); color: var(--label); }
@@ -128,7 +130,7 @@
     .dropdown-item.danger:hover { background: rgba(218,30,40,.12); color: #ff8389; }
 
     /* ── Main layout ── */
-    main { max-width: 860px; margin: 0 auto; padding: var(--space-12) var(--space-8) 4rem; }
+    main { max-width: 860px; margin: 0 auto; padding: var(--space-12) var(--space-8) 4rem; overflow-wrap: break-word; }
 
     .hero { margin-bottom: var(--space-8); }
     .hero h1 { font-size: var(--font-hero); font-weight: 300; line-height: 1.25; margin-bottom: var(--space-3); }
@@ -205,7 +207,7 @@
     .help { font-size: var(--font-footnote); color: var(--label-tertiary); margin-top: var(--space-1); }
 
     /* ── Toggle ── */
-    .toggle-row { display: flex; align-items: center; gap: var(--space-3); cursor: pointer; user-select: none; margin-top: var(--space-4); min-height: 36px; }
+    .toggle-row { display: flex; align-items: center; gap: var(--space-3); cursor: pointer; user-select: none; margin-top: var(--space-4); min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
     .toggle-row input { display: none; }
     .track { width: 36px; height: 20px; background: rgba(255,255,255,0.18); border-radius: 10px; position: relative; transition: background .2s var(--ease); flex-shrink: 0; }
     .thumb { position: absolute; width: 14px; height: 14px; background: var(--label); border-radius: 50%; top: 3px; left: 3px; transition: left .2s var(--ease); }
@@ -218,17 +220,19 @@
       width: 100%; margin-top: var(--space-5); background: var(--accent); border: none;
       color: var(--label); font-family: var(--font-stack); font-size: var(--font-body);
       font-weight: 600; padding: var(--space-3) var(--space-6); border-radius: var(--radius-md);
-      cursor: pointer; min-height: 44px;
+      cursor: pointer; min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
       transition: background .2s var(--ease), transform .1s var(--ease);
     }
     .btn-primary:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-primary:active:not(:disabled) { transform: scale(0.98); }
     .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
 
     .btn-outline {
       background: transparent; border: 1px solid var(--accent); color: var(--accent);
       border-radius: var(--radius-md); font-family: var(--font-stack); font-size: var(--font-subhead);
       font-weight: 600; padding: var(--space-2) var(--space-4); cursor: pointer; text-decoration: none;
-      display: inline-block; white-space: nowrap; min-height: 36px;
+      display: inline-flex; align-items: center; white-space: nowrap; min-height: 44px;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
       transition: background .15s var(--ease), color .15s var(--ease);
     }
     .btn-outline:hover { background: var(--accent); color: var(--label); }
@@ -269,6 +273,7 @@
     .tc-icon.icon-sb       { background: var(--success); }
     .tc-icon.icon-search   { background: var(--accent-cyan); }
     .tc-icon.icon-resume   { background: #8a3ffc; }
+    .tc-icon.icon-role     { background: #9f1853; }
     .tc-card.pending .tc-icon { opacity: .55; animation: pulse 1.2s infinite; }
     .tc-card.done .tc-icon   { opacity: 1; }
     .tc-label  { font-size: var(--font-body); font-weight: 600; flex: 1; }
@@ -309,7 +314,7 @@
       font-size: var(--font-caption); font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
       color: var(--success); margin-bottom: var(--space-3);
     }
-    .profile-live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
+    .profile-live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
     .profile-name { font-size: var(--font-title1); font-weight: 300; margin-bottom: var(--space-1); }
     .profile-name strong { font-weight: 600; }
     .profile-meta { font-size: var(--font-subhead); color: var(--label-tertiary); margin-bottom: var(--space-5); }
@@ -334,7 +339,30 @@
     .rm-header { margin-bottom: var(--space-6); }
     .rm-header h2 { font-size: var(--font-title3); font-weight: 600; margin-bottom: var(--space-2); }
     .rm-summary { font-size: var(--font-body); color: var(--label-secondary); line-height: 1.6; }
-    .gap-row { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
+    .rm-role-pill {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      background: rgba(159,24,83,.15); border: 1px solid rgba(159,24,83,.4);
+      border-radius: var(--radius-sm); padding: var(--space-1) var(--space-3);
+      font-size: var(--font-caption); font-weight: 600; color: #ff7eb6;
+      text-decoration: none; margin-bottom: var(--space-3);
+      transition: background .15s var(--ease);
+    }
+    .rm-role-pill:hover { background: rgba(159,24,83,.28); }
+    /* ── Role readiness row ── */
+    .rm-readiness { margin: var(--space-3) 0 var(--space-4); }
+    .rm-readiness-label { font-size: var(--font-caption); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--label-tertiary); margin-bottom: var(--space-2); }
+    .rm-readiness-skills { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .skill-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      border-radius: var(--radius-sm); padding: var(--space-1) var(--space-2);
+      font-size: var(--font-caption); font-weight: 600;
+    }
+    .skill-chip.gap  { background: rgba(218,30,40,.15); border: 1px solid rgba(218,30,40,.35); color: #ff8389; }
+    .skill-chip.have { background: rgba(25,128,56,.15);  border: 1px solid rgba(25,128,56,.35);  color: #42be65; }
+    .skill-chip svg  { flex-shrink: 0; }
+    .rm-contrast { font-size: var(--font-footnote); color: var(--label-tertiary); margin-bottom: var(--space-2); }
+    .gap-row { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-1); }
+    .gap-row-label { font-size: var(--font-caption); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--label-tertiary); margin-top: var(--space-4); margin-bottom: var(--space-2); }
     .gap-tag {
       background: rgba(105,41,196,.2); border: 1px solid rgba(105,41,196,.5);
       color: #be95ff; border-radius: var(--radius-sm); padding: var(--space-1) var(--space-2);
@@ -351,6 +379,20 @@
     .rm-item:hover {
       border-color: rgba(15,98,254,.3);
       box-shadow: var(--shadow-md), 0 0 0 1px rgba(15,98,254,.15);
+    }
+    .rm-item.first {
+      background: var(--surface-raised); border-color: rgba(15,98,254,.45);
+      box-shadow: var(--shadow-md), 0 0 0 1px rgba(15,98,254,.2);
+      grid-template-columns: 2.25rem 1fr auto;
+      grid-template-rows: auto 1fr;
+    }
+    .rm-item.first .rm-num { background: var(--accent); box-shadow: 0 0 0 4px rgba(15,98,254,.25); }
+    .rm-item.first .rm-title { font-size: var(--font-headline); }
+    .rm-item.first .rm-reason { color: var(--label); }
+    .start-here {
+      grid-column: 1 / -1; font-size: var(--font-caption); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .08em; color: var(--accent);
+      margin-bottom: calc(var(--space-2) * -1);
     }
     @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
     .rm-num {
@@ -370,13 +412,63 @@
     .badge.advanced    { background: rgba(218,30,40,.2);  color: #fa4d56; }
     .rm-hrs    { font-size: var(--font-footnote); color: var(--label-tertiary); }
     .rm-reason { font-size: var(--font-subhead); color: var(--label-secondary); line-height: 1.5; }
+    .rm-stat   { font-size: var(--font-footnote); color: var(--label-tertiary); margin-bottom: var(--space-4); }
     .rm-action { flex-shrink: 0; }
 
     footer { text-align: center; padding: var(--space-8); color: var(--label-tertiary); font-size: var(--font-footnote); }
+    footer abbr { text-decoration: underline dotted; cursor: help; }
 
-    @media (max-width: 580px) {
-      .rm-item { grid-template-columns: 2rem 1fr; }
+    /* ── Global UX ── */
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    :focus:not(:focus-visible) { outline: none; }
+
+    .card, .rm-item, .tc-card, .install-banner, .profile-inner {
+      overflow-wrap: break-word; word-break: break-word;
+    }
+
+    .rm-item { min-width: 0; }
+    .rm-content { min-width: 0; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      html { scroll-behavior: smooth; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ── Tablet (≤ 768px) ── */
+    @media (max-width: 768px) {
+      header { padding: 0 var(--space-5); }
+      main { padding: var(--space-8) var(--space-5) 3rem; }
+      .hero h1 { font-size: var(--font-title1); }
+      .card { padding: var(--space-5); }
+      .profile-inner { padding: var(--space-5); }
+      .rm-item { padding: var(--space-4); gap: var(--space-3); }
+      .install-banner { padding: var(--space-4); }
+      .install-actions { flex-direction: column; }
+      .install-actions .btn-primary,
+      .install-actions .btn-outline { width: 100%; justify-content: center; }
+    }
+
+    /* ── Mobile (≤ 480px) ── */
+    @media (max-width: 480px) {
+      header { padding: 0 var(--space-4); height: 52px; }
+      .logo-name { display: none; }
+      main { padding: var(--space-6) var(--space-4) 2.5rem; }
+      .hero { margin-bottom: var(--space-6); }
+      .hero h1 { font-size: var(--font-title3); }
+      .hero p { font-size: var(--font-subhead); }
+      .rm-item { grid-template-columns: 2rem 1fr; gap: var(--space-3); }
       .rm-action { grid-column: 2; }
+      .rm-num { width: 2rem; height: 2rem; font-size: var(--font-subhead); }
+      .rm-meta { flex-wrap: wrap; gap: var(--space-2); }
+      .gap-row { gap: var(--space-1); }
+      footer { padding: var(--space-6) var(--space-4); }
+      .dropdown { min-width: 180px; }
+      .user-btn .user-name { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     }
 
     /* ── Mock Interview CTA ── */
@@ -503,16 +595,16 @@
 </head>
 <body>
 
-<header>
-  <span class="logo-ibm">IBM</span>
-  <div class="logo-div"></div>
+<header role="banner">
+  <span class="logo-ibm" aria-label="IBM">IBM</span>
+  <div class="logo-div" aria-hidden="true"></div>
   <span class="logo-name">SkillsPath</span>
   <div class="header-right" id="header-auth">
     <button class="auth-btn" id="btn-login" onclick="login()">Connect GitHub</button>
   </div>
 </header>
 
-<main>
+<main role="main">
   <div class="hero">
     <h1>Your personalized<br /><strong>IBM SkillsBuild</strong> roadmap</h1>
     <p>Connects your Canvas academic history to a curated learning path aligned with your career goals.</p>
@@ -523,8 +615,8 @@
     Connect your GitHub account above to get started.
   </div>
 
-  <div class="status-bar wait" id="status-bar">
-    <div class="s-dot"></div>
+  <div class="status-bar wait" id="status-bar" role="status" aria-live="polite">
+    <div class="s-dot" aria-hidden="true"></div>
     <span id="status-txt">Checking Canvas connection…</span>
   </div>
 
@@ -542,7 +634,7 @@
       </div>
       <div class="install-step">
         <div class="step-num">3</div>
-        <span>Click <strong>Load unpacked</strong> → select the unzipped <code>extension</code> folder. Then open <a href="https://canvas.instructure.com" target="_blank" rel="noopener">Canvas</a> and <a href="https://skills.yourlearning.ibm.com" target="_blank" rel="noopener">IBM SkillsBuild</a> to sync your data.</span>
+        <span>Click <strong>Load unpacked</strong> → select the unzipped <code>extension</code> folder. Then open your school's Canvas and <a href="https://skills.yourlearning.ibm.com" target="_blank" rel="noopener">IBM SkillsBuild</a> to sync your data.</span>
       </div>
     </div>
     <div class="install-actions">
@@ -567,11 +659,11 @@
       <span id="resume-name" style="font-size:var(--font-footnote);color:var(--label-secondary);margin-left:.5rem"></span>
     </div>
     <label class="toggle-row">
-      <input type="checkbox" id="demo-mode" />
+      <input type="checkbox" id="demo-mode" onchange="onDemoToggle(this.checked)" />
       <div class="track"><div class="thumb"></div></div>
       <span class="toggle-label">Try with sample student — no Canvas account needed</span>
     </label>
-    <div class="err-bar" id="form-err"></div>
+    <div class="err-bar" id="form-err" role="alert" aria-live="assertive"></div>
     <button class="btn-primary" id="submit-btn" onclick="submit()" disabled>
       Generate my learning roadmap →
     </button>
@@ -581,7 +673,7 @@
     </div>
   </div>
 
-  <div id="agent-panel">
+  <div id="agent-panel" aria-label="Agent activity" aria-live="polite">
     <h2>Agent activity</h2>
     <div class="tc-cards" id="tc-cards"></div>
   </div>
@@ -598,7 +690,14 @@
   <div id="roadmap">
     <div class="rm-header">
       <h2>Your IBM SkillsBuild Roadmap</h2>
+      <div id="rm-role-pill"></div>
+      <div class="rm-readiness" id="rm-readiness" style="display:none">
+        <div class="rm-readiness-label">IBM role requirements</div>
+        <div class="rm-readiness-skills" id="rm-readiness-skills"></div>
+      </div>
+      <p class="rm-contrast" id="rm-contrast"></p>
       <p class="rm-summary" id="rm-summary"></p>
+      <div class="gap-row-label" id="rm-gaps-label" style="display:none">Identified skill gaps</div>
       <div class="gap-row" id="rm-gaps"></div>
     </div>
     <div class="rm-list" id="rm-list"></div>
@@ -612,43 +711,7 @@
   </div>
 </main>
 
-<!-- Voice Interview Modal -->
-<div class="iv-overlay" id="iv-overlay">
-  <div class="iv-modal">
-    <div class="iv-head">
-      <h3 id="iv-title">Mock Interview</h3>
-      <button class="iv-close" onclick="closeIV()">&times;</button>
-    </div>
-    <div class="iv-body">
-      <div class="iv-progress" id="iv-progress"></div>
-      <div class="iv-status" id="iv-status">Starting interview...</div>
-
-      <div class="iv-speaker interviewer" id="iv-interviewer">
-        <div class="iv-lbl">Interviewer</div>
-        <div id="iv-q"></div>
-      </div>
-
-      <div class="iv-speaker you" id="iv-you" style="display:none">
-        <div class="iv-lbl">You</div>
-        <div id="iv-a"></div>
-      </div>
-
-      <div class="iv-feedback" id="iv-fb"></div>
-
-      <div class="iv-mic-wrap" id="iv-mic-wrap" style="display:none">
-        <button class="iv-mic" id="iv-mic" onclick="toggleIVMic()">
-          <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
-        </button>
-        <div class="iv-mic-label" id="iv-mic-label">Tap to speak</div>
-      </div>
-
-      <div class="iv-spin" id="iv-spin"></div>
-      <div id="iv-report"></div>
-    </div>
-  </div>
-</div>
-
-<footer>Built by Jaideep Aher, Roshan Gill &amp; Jonas Neves at <abbr title="North Carolina Central University — HBCU">NCCU</abbr> · IBM SkillsBuild AI Hackathon · 2026</footer>
+<footer>Built by Jaideep Aher, Roshan Gill &amp; Jonas Neves at <abbr title="North Carolina Central University — HBCU">NCCU</abbr> · IBM SkillsBuild AI Hackathon · 2026 · <a href="https://github.com/skillspath/skillspath.github.io" target="_blank" rel="noopener" style="color:var(--label-tertiary);text-decoration:none">GitHub ↗</a></footer>
 
 <script type="module">
 import { connectGitHub } from 'https://neevs.io/auth/connect.js';
@@ -760,7 +823,6 @@ function renderStatus(d) {
     return;
   }
   if (banner) banner.classList.add('hidden');
-  const canvasHref = d.lastCanvasHost || 'https://canvas.instructure.com';
   const parts = [];
   if (d.canvasCourses > 0) parts.push(`Canvas: ${d.canvasCourses} courses`);
   if (d.sbCompleted > 0)   parts.push(`SkillsBuild: ${d.sbCompleted} completed`);
@@ -770,7 +832,10 @@ function renderStatus(d) {
     txt.textContent = parts.join(' · ');
   } else {
     bar.className = 'status-bar wait';
-    txt.innerHTML = `Extension connected — open <a href="${canvasHref}" target="_blank" rel="noopener" style="color:var(--accent)">Canvas</a> and <a href="https://skills.yourlearning.ibm.com" target="_blank" rel="noopener" style="color:var(--accent)">IBM SkillsBuild</a> to sync your data.`;
+    const canvasLink = d.lastCanvasHost
+      ? `<a href="${d.lastCanvasHost}" target="_blank" rel="noopener" style="color:var(--accent)">Canvas</a>`
+      : `your school's Canvas`;
+    txt.innerHTML = `Extension connected — open ${canvasLink} and <a href="https://skills.yourlearning.ibm.com" target="_blank" rel="noopener" style="color:var(--accent)">IBM SkillsBuild</a> to sync your data.`;
   }
 }
 
@@ -841,6 +906,86 @@ const CATALOG = [
 
 // Index by id for fast Start → link lookup
 const CATALOG_IDX = Object.fromEntries(CATALOG.map(c => [c.id, c]));
+
+// ── IBM Role Profiles ─────────────────────────────────────────────────────────
+// Curated from IBM Early Professional / Internship job postings.
+const IBM_ROLES = [
+  {
+    id: 'pm-intern',
+    title: 'Product Management Intern',
+    team: 'IBM Product & Strategy',
+    url: 'https://www.ibm.com/careers/search?q=product+management+intern',
+    required_skills: ['agile','design thinking','user research','problem solving','communication','roadmap planning','stakeholder management'],
+    nice_to_have: ['SQL','data analysis','UX','APIs','watsonx'],
+    description: 'Define product strategy, work with engineering and design, drive roadmap decisions for IBM software products.',
+  },
+  {
+    id: 'ml-engineer-intern',
+    title: 'Machine Learning Engineer Intern',
+    team: 'IBM Research / IBM Data & AI',
+    url: 'https://www.ibm.com/careers/search?q=machine+learning+engineer+intern',
+    required_skills: ['python','machine learning','deep learning','scikit-learn','model evaluation','statistics'],
+    nice_to_have: ['tensorflow','pytorch','MLOps','watsonx','NLP','SQL','Spark'],
+    description: 'Build and deploy ML models for IBM products; contribute to IBM watsonx or IBM Research projects.',
+  },
+  {
+    id: 'data-scientist-intern',
+    title: 'Data Scientist Intern',
+    team: 'IBM Consulting / IBM Data & AI',
+    url: 'https://www.ibm.com/careers/search?q=data+scientist+intern',
+    required_skills: ['python','pandas','statistics','data visualization','SQL','machine learning'],
+    nice_to_have: ['Spark','big data','IBM Db2','Cognos','Jupyter','storytelling'],
+    description: 'Analyze large datasets to surface business insights; build models and dashboards for IBM clients.',
+  },
+  {
+    id: 'cloud-engineer-intern',
+    title: 'Cloud & DevOps Engineer Intern',
+    team: 'IBM Cloud / IBM Technology',
+    url: 'https://www.ibm.com/careers/search?q=cloud+devops+engineer+intern',
+    required_skills: ['cloud computing','Kubernetes','Docker','CI/CD','Linux','REST API'],
+    nice_to_have: ['IBM Cloud','OpenShift','Terraform','Ansible','Python','monitoring'],
+    description: 'Deploy and manage cloud-native applications on IBM Cloud and Red Hat OpenShift.',
+  },
+  {
+    id: 'cybersecurity-intern',
+    title: 'Cybersecurity Analyst Intern',
+    team: 'IBM Security / IBM X-Force',
+    url: 'https://www.ibm.com/careers/search?q=cybersecurity+analyst+intern',
+    required_skills: ['cybersecurity','network security','threat analysis','SIEM','incident response'],
+    nice_to_have: ['penetration testing','forensics','compliance','QRadar','Python','cloud security'],
+    description: 'Detect and respond to threats using IBM QRadar SIEM; support IBM X-Force threat intelligence.',
+  },
+  {
+    id: 'software-dev-intern',
+    title: 'Software Developer Intern',
+    team: 'IBM Technology / IBM Consulting',
+    url: 'https://www.ibm.com/careers/search?q=software+developer+intern',
+    required_skills: ['software engineering','Python','agile','Git','REST API','testing'],
+    nice_to_have: ['Java','Node.js','Kubernetes','CI/CD','microservices','cloud-native'],
+    description: 'Build enterprise software features; contribute to IBM Cloud Paks or client-facing applications.',
+  },
+  {
+    id: 'ai-research-intern',
+    title: 'AI Research Intern',
+    team: 'IBM Research',
+    url: 'https://www.ibm.com/careers/search?q=AI+research+intern',
+    required_skills: ['deep learning','NLP','python','research','pytorch','mathematics'],
+    nice_to_have: ['transformers','BERT','generative AI','watsonx','publications','reinforcement learning'],
+    description: 'Conduct original AI research at IBM Research labs; contribute to foundation models and responsible AI.',
+  },
+];
+
+function matchIBMRole(careerGoal) {
+  const goal = careerGoal.toLowerCase();
+  let best = null, bestScore = -1;
+  for (const role of IBM_ROLES) {
+    const hay = `${role.title} ${role.description} ${role.required_skills.join(' ')} ${role.nice_to_have.join(' ')}`.toLowerCase();
+    const goalTerms = goal.split(/\s+/);
+    const score = goalTerms.reduce((s, t) => s + (hay.includes(t) ? 1 : 0), 0);
+    if (score > bestScore) { bestScore = score; best = role; }
+  }
+  return best;
+}
 
 function searchCatalog(query, n = 5) {
   const terms = query.toLowerCase().split(/\s+/);
@@ -939,6 +1084,14 @@ const TOOLS = [
   {
     type: 'function',
     function: {
+      name: 'match_ibm_role',
+      description: "Match the student's career goal to the closest IBM early-career role and return its required skills. Call this early to understand what IBM actually looks for in this role.",
+      parameters: { type: 'object', properties: {}, required: [] },
+    },
+  },
+  {
+    type: 'function',
+    function: {
       name: 'search_skillsbuild_catalog',
       description: 'Search the IBM SkillsBuild catalog. Call at least 3 times with different queries.',
       parameters: {
@@ -961,12 +1114,37 @@ async function executeTool(name, args, demoMode) {
     const courses = data.courses || [];
     const grades = data.grades || {};
     const profile = data.userProfile || {};
-    showProfileCard(profile.name || 'Student', profile.bio || '', courses, grades);
-    return { courses_text: fmtCourses(courses, grades), count: courses.length };
+    showProfileCard(profile.name || 'Student', profile.bio || '', courses, grades, demoMode);
+    // Surface top-graded courses for the tool card summary
+    const GRADE_RANK = { 'A+':4.3,'A':4.0,'A-':3.7,'B+':3.3,'B':3.0,'B-':2.7,'C+':2.3,'C':2.0 };
+    const top = courses
+      .map(c => {
+        const g = grades[String(c.id || '')];
+        const letter = g?.currentGrade || g?.finalGrade || '';
+        return { name: c.name || '', code: c.course_code || '', letter, rank: GRADE_RANK[letter] ?? -1 };
+      })
+      .filter(c => c.rank >= 3.0)
+      .sort((a, b) => b.rank - a.rank)
+      .slice(0, 3);
+    return { courses_text: fmtCourses(courses, grades), count: courses.length, top };
   }
   if (name === 'fetch_resume') {
     if (!window._resumeText) return { text: 'No resume uploaded.' };
     return { text: window._resumeText };
+  }
+  if (name === 'match_ibm_role') {
+    const interests = document.getElementById('interests').value.trim();
+    const role = matchIBMRole(interests);
+    if (!role) return { error: 'No matching IBM role found.' };
+    window._matchedRole = role;
+    return {
+      role_title: role.title,
+      team: role.team,
+      required_skills: role.required_skills.join(', '),
+      nice_to_have: role.nice_to_have.join(', '),
+      description: role.description,
+      careers_url: role.url,
+    };
   }
   if (name === 'fetch_skillsbuild_history') {
     const data = await getCanvasData(demoMode);
@@ -985,12 +1163,18 @@ async function executeTool(name, args, demoMode) {
 
 const SYSTEM = `You are an IBM SkillsBuild career advisor agent.
 
-1. Fetch the student's Canvas profile and full course history.
-2. Fetch their IBM SkillsBuild learning history (completed courses and credentials).
-3. Analyze their background: academic subjects, grades, what they've already done on SkillsBuild.
-4. Search the IBM SkillsBuild catalog at least 3 times with different queries.
-5. Produce a personalized, prioritized roadmap — only recommend courses they have NOT already completed.
+1. Call match_ibm_role to identify the closest IBM early-career role and the skills IBM actually requires for it.
+2. Fetch the student's Canvas profile and full course history.
+3. Fetch their IBM SkillsBuild learning history (completed courses and credentials).
+4. Analyze their background against the IBM role requirements: what skills they have, what's missing.
+5. Search the IBM SkillsBuild catalog at least 3 times targeting the skill gaps you identified.
+6. Produce a personalized, prioritized roadmap — only recommend courses they have NOT already completed.
+   Prioritize courses that directly close gaps for the matched IBM role.
    If a course is already done, acknowledge it as a strength instead.
+   In each "reason" field, reference the student's ACTUAL courses and grades by name
+   (e.g. "You earned an A in Database Systems but have no cloud exposure — this bridges directly
+   to IBM Cloud roles"). Generic reasons like "this course teaches Python" are not acceptable.
+   Every reason MUST cite the student's name, a specific course name, and its grade from their record.
 
 Output ONLY this JSON when ready (no prose, no code fences):
 {
@@ -1013,6 +1197,7 @@ Output ONLY this JSON when ready (no prose, no code fences):
 
 // ── Resume parsing ────────────────────────────────────────────────────────────
 window._resumeText = null;
+window._matchedRole = null;
 
 document.getElementById('resume-file').addEventListener('change', async (e) => {
   const file = e.target.files[0];
@@ -1044,18 +1229,176 @@ document.getElementById('resume-file').addEventListener('change', async (e) => {
   if (window._resumeText) area.classList.add('has-file');
 });
 
+// ── AI provider ───────────────────────────────────────────────────────────────
+const PROXY_URL = 'http://127.0.0.1:7337/v1/messages';
+let proxyAvailable = false;
+
+async function checkProxy() {
+  try {
+    const ac = new AbortController();
+    setTimeout(() => ac.abort(), 2000);
+    const res = await fetch(PROXY_URL, { method: 'POST', signal: ac.signal,
+      headers: { 'content-type': 'application/json' }, body: '{}' });
+    proxyAvailable = res.status < 500; // 400 = reachable but bad body; 5xx = down
+  } catch { proxyAvailable = false; }
+}
+
+function oaiToolsToAnthropic(tools) {
+  return tools.map(t => ({
+    name: t.function.name,
+    description: t.function.description,
+    input_schema: t.function.parameters,
+  }));
+}
+
+function oaiToolChoiceToAnthropic(tc) {
+  if (tc === 'auto') return { type: 'auto' };
+  if (tc?.function?.name) return { type: 'tool', name: tc.function.name };
+  return { type: 'auto' };
+}
+
+function oaiMsgsToAnthropic(msgs) {
+  const system = msgs.find(m => m.role === 'system')?.content;
+  const converted = [];
+  for (const msg of msgs) {
+    if (msg.role === 'system') continue;
+    if (msg.role === 'user') {
+      converted.push({ role: 'user', content: msg.content });
+    } else if (msg.role === 'assistant') {
+      const content = [];
+      if (msg.content) content.push({ type: 'text', text: msg.content });
+      for (const tc of msg.tool_calls || []) {
+        content.push({ type: 'tool_use', id: tc.id, name: tc.function.name,
+          input: JSON.parse(tc.function.arguments || '{}') });
+      }
+      converted.push({ role: 'assistant', content });
+    } else if (msg.role === 'tool') {
+      const result = { type: 'tool_result', tool_use_id: msg.tool_call_id, content: msg.content };
+      const last = converted[converted.length - 1];
+      if (last?.role === 'user' && Array.isArray(last.content)) last.content.push(result);
+      else converted.push({ role: 'user', content: [result] });
+    }
+  }
+  return { system, messages: converted };
+}
+
+async function callApi(msgs, tools, toolChoice) {
+  while (true) {
+    let res;
+    if (proxyAvailable) {
+      const { system, messages } = oaiMsgsToAnthropic(msgs);
+      res = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6', system, messages,
+          tools: oaiToolsToAnthropic(tools),
+          tool_choice: oaiToolChoiceToAnthropic(toolChoice),
+          max_tokens: 4096, stream: true,
+        }),
+      });
+    } else {
+      res = await fetch('https://models.github.ai/inference/chat/completions', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'authorization': `Bearer ${auth.token}` },
+        body: JSON.stringify({
+          model: selectedModel, messages: msgs, tools, tool_choice: toolChoice,
+          max_completion_tokens: 4096, stream: true,
+        }),
+      });
+    }
+
+    if (res.status === 429) {
+      const btn = document.getElementById('submit-btn');
+      for (let i = 30; i > 0; i--) {
+        btn.textContent = `Rate limited — retrying in ${i}s…`;
+        await new Promise(r => setTimeout(r, 1000));
+      }
+      btn.textContent = 'Analyzing…';
+      continue;
+    }
+
+    if (!res.ok) {
+      const txt = await res.text();
+      if (res.status === 401) throw new Error('GitHub token expired — sign out and reconnect your account.');
+      throw new Error(`Request failed (${res.status}): ${txt.slice(0, 200)}`);
+    }
+
+    return { body: res.body, provider: proxyAvailable ? 'anthropic' : 'openai' };
+  }
+}
+
+async function parseApiResponse(body, provider) {
+  let textContent = '';
+  if (provider === 'anthropic') {
+    const blocks = {};
+    for await (const event of parseSSEStream(body)) {
+      if (event.type === 'content_block_start') {
+        const cb = event.content_block;
+        blocks[event.index] = cb.type === 'tool_use'
+          ? { type: 'tool_use', id: cb.id, name: cb.name, input: '' }
+          : { type: 'text', text: '' };
+      } else if (event.type === 'content_block_delta') {
+        const b = blocks[event.index];
+        if (!b) continue;
+        if (event.delta.type === 'text_delta') { b.text += event.delta.text; textContent += event.delta.text; }
+        else if (event.delta.type === 'input_json_delta') b.input += event.delta.partial_json;
+      }
+    }
+    const toolCalls = Object.values(blocks).filter(b => b.type === 'tool_use')
+      .map(b => ({ id: b.id, name: b.name, arguments: b.input }));
+    return { textContent, toolCalls };
+  } else {
+    const tcMap = {};
+    for await (const chunk of parseSSEStream(body)) {
+      const delta = chunk.choices?.[0]?.delta;
+      if (!delta) continue;
+      if (delta.content) textContent += delta.content;
+      if (delta.tool_calls) {
+        for (const tc of delta.tool_calls) {
+          const e = tcMap[tc.index] ??= { id: '', name: '', arguments: '' };
+          if (tc.id) e.id = tc.id;
+          if (tc.function?.name) e.name = tc.function.name;
+          if (tc.function?.arguments) e.arguments += tc.function.arguments;
+        }
+      }
+    }
+    return { textContent, toolCalls: Object.values(tcMap) };
+  }
+}
+
+async function* parseSSEStream(body) {
+  const reader = body.getReader();
+  const dec = new TextDecoder();
+  let buf = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    const lines = buf.split('\n');
+    buf = lines.pop() ?? '';
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const payload = line.slice(6).trim();
+      if (payload === '[DONE]') return;
+      try { yield JSON.parse(payload); } catch { /**/ }
+    }
+  }
+}
+
 // ── Agent loop ────────────────────────────────────────────────────────────────
 window.submit = async () => {
   const interests = document.getElementById('interests').value.trim();
   const demoMode = document.getElementById('demo-mode').checked;
 
-  if (!auth?.token) return showErr('Please connect your GitHub account first.');
+  await checkProxy();
+  if (!proxyAvailable && !auth?.token) return showErr('Please connect your GitHub account first.');
   if (!interests) return showErr('Please describe your career goal.');
 
   if (!demoMode) {
     const health = await postMessageRequest('sp-get-health', 'sp-health');
     if (!health?.canvasCourses) {
-      const canvasUrl = health?.lastCanvasHost || 'https://canvas.instructure.com';
+      const canvasUrl = health?.lastCanvasHost || 'your school\'s Canvas';
       return showErr(`No Canvas data yet — open ${canvasUrl} in your browser so the extension can sync your courses, or enable "Try with sample student" to demo without Canvas.`);
     }
   }
@@ -1072,6 +1415,12 @@ window.submit = async () => {
   document.getElementById('rm-list').innerHTML = '';
   document.getElementById('rm-gaps').innerHTML = '';
   document.getElementById('rm-summary').textContent = '';
+  document.getElementById('rm-contrast').textContent = '';
+  document.getElementById('rm-role-pill').innerHTML = '';
+  document.getElementById('rm-readiness-skills').innerHTML = '';
+  document.getElementById('rm-readiness').style.display = 'none';
+  document.getElementById('rm-gaps-label').style.display = 'none';
+  window._matchedRole = null;
   document.getElementById('agent-panel').style.display = 'none';
   document.getElementById('profile-card').style.display = 'none';
   document.getElementById('roadmap').style.display = 'none';
@@ -1094,46 +1443,17 @@ window.submit = async () => {
     { role: 'user', content: `My career goal: ${interests}\n\nFetch my Canvas data and generate an IBM SkillsBuild learning roadmap.${resumeHint}` },
   ];
 
+  let firstCall = true;
   try {
     while (true) {
-      const res = await fetch('https://models.github.ai/inference/chat/completions', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'authorization': `Bearer ${auth.token}` },
-        body: JSON.stringify({
-          model: selectedModel,
-          messages: msgs,
-          tools: activeTools,
-          tool_choice: 'auto',
-          max_completion_tokens: 4096,
-          stream: true,
-        }),
-      });
+      const toolChoice = firstCall
+        ? { type: 'function', function: { name: 'match_ibm_role' } }
+        : 'auto';
+      firstCall = false;
 
-      if (!res.ok) {
-        const txt = await res.text();
-        if (res.status === 429) throw new Error('Rate limit reached — wait 30 seconds and try again, or switch models in the menu above.');
-        if (res.status === 401) throw new Error('GitHub token expired — sign out and reconnect your account.');
-        throw new Error(`Request failed (${res.status}). Try again or switch to demo mode.`);
-      }
+      const { body, provider } = await callApi(msgs, activeTools, toolChoice);
+      const { textContent, toolCalls } = await parseApiResponse(body, provider);
 
-      let textContent = '';
-      const tcMap = {};
-
-      for await (const chunk of parseOpenAIStream(res.body)) {
-        const delta = chunk.choices?.[0]?.delta;
-        if (!delta) continue;
-        if (delta.content) textContent += delta.content;
-        if (delta.tool_calls) {
-          for (const tc of delta.tool_calls) {
-            const e = tcMap[tc.index] ??= { id: '', name: '', arguments: '' };
-            if (tc.id) e.id = tc.id;
-            if (tc.function?.name) e.name = tc.function.name;
-            if (tc.function?.arguments) e.arguments += tc.function.arguments;
-          }
-        }
-      }
-
-      const toolCalls = Object.values(tcMap);
       const assistantMsg = { role: 'assistant', content: textContent || null };
       if (toolCalls.length) {
         assistantMsg.tool_calls = toolCalls.map(tc => ({
@@ -1143,11 +1463,12 @@ window.submit = async () => {
       msgs.push(assistantMsg);
 
       if (!toolCalls.length) {
-        // Final response — parse JSON roadmap
         let text = (textContent || '').trim();
         if (text.startsWith('```')) {
           text = text.split('\n').slice(1).join('\n').replace(/```$/, '').trim();
         }
+        const jsonBlock = text.match(/\{[\s\S]*\}/);
+        if (jsonBlock) text = jsonBlock[0];
         try {
           showRoadmap(JSON.parse(text));
         } catch {
@@ -1156,7 +1477,7 @@ window.submit = async () => {
         break;
       }
 
-      // Execute tools — minimum 900ms display so judges can read each card
+      // Execute tools — minimum 600ms display so judges can read each card
       const sleep = ms => new Promise(r => setTimeout(r, ms));
       for (const tc of toolCalls) {
         let args = {};
@@ -1164,7 +1485,7 @@ window.submit = async () => {
         addToolCard(tc.id, getToolIcon(tc.name), getToolLabel(tc.name, args), tc.name);
         const [result] = await Promise.all([
           executeTool(tc.name, args, demoMode),
-          sleep(900),
+          sleep(600),
         ]);
         completeToolCard(tc.id, result, tc.name);
         msgs.push({ role: 'tool', tool_call_id: tc.id, content: JSON.stringify(result) });
@@ -1178,25 +1499,6 @@ window.submit = async () => {
   }
 };
 
-async function* parseOpenAIStream(body) {
-  const reader = body.getReader();
-  const dec = new TextDecoder();
-  let buf = '';
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buf += dec.decode(value, { stream: true });
-    const lines = buf.split('\n');
-    buf = lines.pop() ?? '';
-    for (const line of lines) {
-      if (!line.startsWith('data: ')) continue;
-      const payload = line.slice(6).trim();
-      if (payload === '[DONE]') return;
-      try { yield JSON.parse(payload); } catch { /**/ }
-    }
-  }
-}
-
 // ── UI helpers ────────────────────────────────────────────────────────────────
 const TOOL_SVG = {
   fetch_canvas_profile: `<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5 6a5 5 0 0 1 10 0H3z"/></svg>`,
@@ -1205,20 +1507,28 @@ const TOOL_SVG = {
 };
 const SEARCH_SVG = `<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>`;
 const RESUME_SVG = `<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zM14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/></svg>`;
+const ROLE_SVG = `<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>`;
 const TOOL_ICON_CLASS = {
   fetch_canvas_profile:    'icon-profile',
   fetch_canvas_courses:    'icon-courses',
   fetch_skillsbuild_history: 'icon-sb',
   fetch_resume:            'icon-resume',
+  match_ibm_role:          'icon-role',
 };
 
-function getToolIcon(name) { return TOOL_SVG[name] || (name === 'fetch_resume' ? RESUME_SVG : SEARCH_SVG); }
+function getToolIcon(name) {
+  if (TOOL_SVG[name]) return TOOL_SVG[name];
+  if (name === 'fetch_resume')   return RESUME_SVG;
+  if (name === 'match_ibm_role') return ROLE_SVG;
+  return SEARCH_SVG;
+}
 
 function getToolLabel(name, args) {
   if (name === 'fetch_canvas_profile')    return 'Canvas Profile';
   if (name === 'fetch_canvas_courses')    return 'Canvas Courses';
   if (name === 'fetch_skillsbuild_history') return 'SkillsBuild History';
   if (name === 'fetch_resume')             return 'Resume';
+  if (name === 'match_ibm_role')           return 'IBM Role Match';
   return `Catalog: "${args.query || ''}"`;
 }
 
@@ -1245,7 +1555,14 @@ function getToolSummary(result, toolName) {
     return `<strong>${result.name || 'Student'}</strong>${result.bio ? ' — ' + result.bio : ''}`;
   }
   if (toolName === 'fetch_canvas_courses') {
-    return `<strong>${result.count}</strong> courses loaded`;
+    const base = `<strong>${result.count}</strong> courses loaded`;
+    if (result.top?.length) {
+      const chips = result.top.map(c =>
+        `<span class="tc-chip">${c.code || c.name.split(' ').slice(0,2).join(' ')} <strong>${c.letter}</strong></span>`
+      ).join('');
+      return `${base} · strongest in<div class="tc-result-chips">${chips}</div>`;
+    }
+    return base;
   }
   if (toolName === 'fetch_skillsbuild_history') {
     const completed = (result.completed_courses || '').split('\n').filter(l => l.trim().startsWith('-')).length;
@@ -1255,6 +1572,10 @@ function getToolSummary(result, toolName) {
   if (toolName === 'fetch_resume') {
     const words = (result.text || '').split(/\s+/).filter(Boolean).length;
     return words > 5 ? `<strong>${words}</strong> words parsed` : 'No resume content';
+  }
+  if (toolName === 'match_ibm_role') {
+    if (result.error) return result.error;
+    return `<strong>${result.role_title}</strong> · ${result.team}`;
   }
   // catalog search
   const chips = (result.results || '').split('\n')
@@ -1272,7 +1593,12 @@ function completeToolCard(id, result, toolName) {
   card.querySelector('.tc-body').innerHTML = getToolSummary(result, toolName);
 }
 
-function showProfileCard(name, bio, courses, grades) {
+function showProfileCard(name, bio, courses, grades, isDemo) {
+  const liveEl = document.getElementById('profile-card').querySelector('.profile-live');
+  if (liveEl) {
+    liveEl.textContent = isDemo ? 'Demo · Sample student' : 'Live · Canvas data';
+    liveEl.style.color = isDemo ? 'var(--warning)' : '';
+  }
   document.getElementById('profile-name').innerHTML = `<strong>${name}</strong>`;
   document.getElementById('profile-meta').textContent = bio || '';
   const container = document.getElementById('profile-courses');
@@ -1295,20 +1621,74 @@ function showProfileCard(name, bio, courses, grades) {
 }
 
 function showRoadmap(data) {
+  const firstName = (data.student_name || '').split(' ')[0];
+  document.querySelector('#roadmap .rm-header h2').textContent =
+    firstName ? `${firstName}'s IBM SkillsBuild Roadmap` : 'Your IBM SkillsBuild Roadmap';
+
+  // ── IBM role pill ──
+  const pillEl = document.getElementById('rm-role-pill');
+  if (window._matchedRole) {
+    pillEl.innerHTML = `<a class="rm-role-pill" href="${window._matchedRole.url}" target="_blank" rel="noopener">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+      ${window._matchedRole.title} · View on IBM Careers ↗
+    </a>`;
+  } else {
+    pillEl.innerHTML = '';
+  }
+
+  // ── Role readiness row: IBM required skills, each marked covered or gap ──
+  if (window._matchedRole?.required_skills?.length) {
+    const gapSet = new Set((data.skill_gaps || []).map(g => g.toLowerCase()));
+    const skillsEl = document.getElementById('rm-readiness-skills');
+    skillsEl.innerHTML = '';
+    window._matchedRole.required_skills.forEach(skill => {
+      const isGap = gapSet.has(skill.toLowerCase()) ||
+        [...gapSet].some(g => g.includes(skill.toLowerCase()) || skill.toLowerCase().includes(g));
+      const chip = document.createElement('span');
+      chip.className = `skill-chip ${isGap ? 'gap' : 'have'}`;
+      chip.innerHTML = isGap
+        ? `<svg width="9" height="9" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>${skill}`
+        : `<svg width="9" height="9" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>${skill}`;
+      skillsEl.appendChild(chip);
+    });
+    document.getElementById('rm-readiness').style.display = 'block';
+  }
+
+  // ── Contrast line ──
+  const items = data.roadmap || [];
+  const contrastEl = document.getElementById('rm-contrast');
+  contrastEl.textContent = items.length
+    ? `1,000+ SkillsBuild courses → your ${items.length}, gap-targeted and role-ranked`
+    : '';
+
   document.getElementById('rm-summary').textContent = data.summary || '';
+
+  // ── Skill gaps ──
   const gaps = document.getElementById('rm-gaps');
-  (data.skill_gaps || []).forEach(g => {
-    const el = document.createElement('span');
-    el.className = 'gap-tag'; el.textContent = g;
-    gaps.appendChild(el);
-  });
+  if ((data.skill_gaps || []).length) {
+    document.getElementById('rm-gaps-label').style.display = 'block';
+    (data.skill_gaps || []).forEach(g => {
+      const el = document.createElement('span');
+      el.className = 'gap-tag'; el.textContent = g;
+      gaps.appendChild(el);
+    });
+  }
+
   const list = document.getElementById('rm-list');
-  (data.roadmap || []).forEach((item, i) => {
+  if (items.length) {
+    const totalHours = items.reduce((s, r) => s + (r.duration_hours || 0), 0);
+    const stat = document.createElement('p');
+    stat.className = 'rm-stat';
+    stat.textContent = `${items.length} course${items.length !== 1 ? 's' : ''} · ~${totalHours}h to complete`;
+    list.appendChild(stat);
+  }
+  items.forEach((item, i) => {
     const el = document.createElement('div');
-    el.className = 'rm-item';
+    el.className = i === 0 ? 'rm-item first' : 'rm-item';
     el.style.animationDelay = `${i * 0.07}s`;
     const lvl = (item.level || '').toLowerCase();
     el.innerHTML = `
+      ${i === 0 ? '<span class="start-here">Start here</span>' : ''}
       <div class="rm-num">${item.priority}</div>
       <div>
         <div class="rm-track">${item.track || ''}</div>
@@ -1341,312 +1721,49 @@ function showErr(msg) {
 }
 function clearErr() { document.getElementById('form-err').style.display = 'none'; }
 
-// ── Voice Mock Interview ──────────────────────────────────────────────────────
-const IV_API = 'http://localhost:8000'; // InternMatch FastAPI backend (run locally)
-let ivSession = null;   // { session_id, questions, current_question, ... }
-let ivRec = null;        // SpeechRecognition instance
-let ivRecording = false;
-let ivSynth = window.speechSynthesis;
+const DEMO_GOAL = "I want to work as a machine learning engineer at a healthcare company.";
 
-window.openMockInterview = async function() {
-  const overlay = document.getElementById('iv-overlay');
-  overlay.classList.add('open');
-  resetIVUI();
-
-  // Gather context from roadmap
-  const targetRole = document.getElementById('interests')?.value.trim().slice(0, 80) || 'Software Engineering Intern';
-  const skillGaps = (window._ivSkillGaps || []).slice(0, 8);
-  const userSkills = [];
-  // Collect completed SkillsBuild courses as proxy for user skills
-  const sbData = window._lastSkillsBuild;
-  const completedCourses = [];
-  if (sbData?.completedCourses) {
-    sbData.completedCourses.forEach(c => completedCourses.push(c.title));
-  }
-
-  document.getElementById('iv-status').textContent = 'Preparing your interview...';
-  document.getElementById('iv-spin').style.display = 'block';
-  document.getElementById('iv-title').textContent = `Mock Interview — ${targetRole}`;
-
-  try {
-    const resp = await fetch(`${IV_API}/interview/start`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        job_title: targetRole,
-        company: 'Tech Company',
-        job_description: `Internship role requiring: ${skillGaps.join(', ')}`,
-        skills_found: skillGaps,
-        user_skills: completedCourses,
-        user_skill_gaps: skillGaps,
-      }),
-    });
-    const data = await resp.json();
-    if (data.error) throw new Error(data.error);
-
-    ivSession = data;
-    showIVQuestion(data.question, data.current_question, data.total_questions);
-  } catch (e) {
-    document.getElementById('iv-status').textContent = 'Error: ' + e.message;
-    document.getElementById('iv-spin').style.display = 'none';
-  }
+window.onDemoToggle = (on) => {
+  const ta = document.getElementById('interests');
+  if (on && !ta.value.trim()) ta.value = DEMO_GOAL;
+  else if (!on && ta.value === DEMO_GOAL) ta.value = '';
 };
-
-function resetIVUI() {
-  document.getElementById('iv-q').textContent = '';
-  document.getElementById('iv-a').textContent = '';
-  document.getElementById('iv-fb').innerHTML = '';
-  document.getElementById('iv-fb').style.display = 'none';
-  document.getElementById('iv-you').style.display = 'none';
-  document.getElementById('iv-mic-wrap').style.display = 'none';
-  document.getElementById('iv-spin').style.display = 'none';
-  document.getElementById('iv-report').innerHTML = '';
-  document.getElementById('iv-progress').innerHTML = '';
-  document.getElementById('iv-status').textContent = '';
-  ivSession = null;
-  ivRecording = false;
-  if (ivRec) { try { ivRec.abort(); } catch(_){} ivRec = null; }
-  ivSynth.cancel();
-}
-
-function showIVQuestion(question, current, total) {
-  document.getElementById('iv-spin').style.display = 'none';
-
-  // Progress dots
-  const prog = document.getElementById('iv-progress');
-  prog.innerHTML = '';
-  for (let i = 1; i <= total; i++) {
-    const dot = document.createElement('span');
-    dot.className = 'iv-dot' + (i < current ? ' done' : '') + (i === current ? ' active' : '');
-    prog.appendChild(dot);
-  }
-
-  document.getElementById('iv-status').textContent = `Question ${current} of ${total}`;
-  document.getElementById('iv-q').textContent = question;
-  document.getElementById('iv-interviewer').style.display = 'block';
-  document.getElementById('iv-you').style.display = 'none';
-  document.getElementById('iv-fb').style.display = 'none';
-  document.getElementById('iv-a').textContent = '';
-
-  // Speak the question, then show mic
-  speak(question, () => {
-    document.getElementById('iv-mic-wrap').style.display = 'flex';
-    document.getElementById('iv-mic-label').textContent = 'Tap to speak your answer';
-  });
-}
-
-function speak(text, onEnd) {
-  ivSynth.cancel();
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.rate = 1.0;
-  utter.pitch = 1.0;
-  // Pick a good voice
-  const voices = ivSynth.getVoices();
-  const preferred = voices.find(v => v.name.includes('Samantha')) ||
-                    voices.find(v => v.lang.startsWith('en') && v.localService) ||
-                    voices[0];
-  if (preferred) utter.voice = preferred;
-  utter.onend = () => { if (onEnd) onEnd(); };
-  ivSynth.speak(utter);
-}
-
-window.toggleIVMic = function() {
-  if (ivRecording) {
-    stopIVRec();
-  } else {
-    startIVRec();
-  }
-};
-
-function startIVRec() {
-  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRec) {
-    document.getElementById('iv-mic-label').textContent = 'Speech not supported in this browser';
-    return;
-  }
-  ivRec = new SpeechRec();
-  ivRec.continuous = true;
-  ivRec.interimResults = true;
-  ivRec.lang = 'en-US';
-
-  let transcript = '';
-  ivRec.onresult = (e) => {
-    transcript = '';
-    for (let i = 0; i < e.results.length; i++) {
-      transcript += e.results[i][0].transcript;
-    }
-    document.getElementById('iv-a').textContent = transcript;
-    document.getElementById('iv-you').style.display = 'block';
-  };
-  ivRec.onerror = (e) => {
-    if (e.error !== 'aborted') {
-      document.getElementById('iv-mic-label').textContent = 'Mic error: ' + e.error + '. Tap to retry.';
-    }
-    ivRecording = false;
-    document.getElementById('iv-mic').classList.remove('recording');
-  };
-  ivRec.onend = () => {
-    if (ivRecording) {
-      // Auto-submit when user stops speaking
-      ivRecording = false;
-      document.getElementById('iv-mic').classList.remove('recording');
-      const answer = document.getElementById('iv-a').textContent.trim();
-      if (answer) {
-        submitIVAnswer(answer);
-      } else {
-        document.getElementById('iv-mic-label').textContent = 'No speech detected. Tap to try again.';
-      }
-    }
-  };
-
-  ivRec.start();
-  ivRecording = true;
-  document.getElementById('iv-mic').classList.add('recording');
-  document.getElementById('iv-mic-label').textContent = 'Listening… tap to stop';
-  document.getElementById('iv-you').style.display = 'block';
-  document.getElementById('iv-a').textContent = '';
-}
-
-function stopIVRec() {
-  ivRecording = false;
-  document.getElementById('iv-mic').classList.remove('recording');
-  if (ivRec) {
-    try { ivRec.stop(); } catch(_){}
-  }
-}
-
-async function submitIVAnswer(answer) {
-  document.getElementById('iv-mic-wrap').style.display = 'none';
-  document.getElementById('iv-spin').style.display = 'block';
-  document.getElementById('iv-status').textContent = 'Evaluating your answer...';
-
-  try {
-    const resp = await fetch(`${IV_API}/interview/answer`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        session_id: ivSession.session_id,
-        answer: answer,
-      }),
-    });
-    const data = await resp.json();
-    if (data.error) throw new Error(data.error);
-
-    document.getElementById('iv-spin').style.display = 'none';
-
-    if (data.interview_complete) {
-      // Show final report
-      renderIVReport(data);
-    } else {
-      // Show feedback, then next question
-      if (data.feedback) {
-        const fb = document.getElementById('iv-fb');
-        fb.style.display = 'block';
-        fb.innerHTML = `<strong>Score: ${data.score}/5</strong><br>${data.feedback}`;
-        speak(data.feedback, () => {
-          setTimeout(() => {
-            showIVQuestion(data.question, data.current_question, data.total_questions);
-          }, 500);
-        });
-      } else {
-        showIVQuestion(data.question, data.current_question, data.total_questions);
-      }
-    }
-  } catch (e) {
-    document.getElementById('iv-spin').style.display = 'none';
-    document.getElementById('iv-status').textContent = 'Error: ' + e.message;
-    document.getElementById('iv-mic-wrap').style.display = 'flex';
-  }
-}
-
-function renderIVReport(data) {
-  const report = data.report || {};
-  const rEl = document.getElementById('iv-report');
-  document.getElementById('iv-status').textContent = 'Interview Complete!';
-  document.getElementById('iv-mic-wrap').style.display = 'none';
-  document.getElementById('iv-interviewer').style.display = 'none';
-  document.getElementById('iv-you').style.display = 'none';
-  document.getElementById('iv-fb').style.display = 'none';
-
-  // Build progress to show all done
-  const prog = document.getElementById('iv-progress');
-  prog.innerHTML = '';
-  for (let i = 0; i < 5; i++) {
-    const dot = document.createElement('span');
-    dot.className = 'iv-dot done';
-    prog.appendChild(dot);
-  }
-
-  const avg = report.average_score || 0;
-  const strengths = (report.strengths || []).map(s => `<li>${s}</li>`).join('');
-  const weaknesses = (report.weaknesses || []).map(w => `<li>${w}</li>`).join('');
-  const courses = (report.recommended_courses || []).map(c => `
-    <div class="iv-course">
-      <div><div class="c-name">${c.course_name || c.title || 'Course'}</div>
-      <div class="c-meta">${c.hours || ''}h · ${c.credential || ''}</div></div>
-      ${c.url ? `<a href="${c.url}" target="_blank">Start on SkillsBuild →</a>` : ''}
-    </div>
-  `).join('');
-
-  rEl.innerHTML = `
-    <div class="iv-report">
-      <div class="iv-report-score"><div class="big">${avg.toFixed(1)}</div><div class="sub">out of 5</div></div>
-      ${strengths ? `<h4 class="g">Strengths</h4><ul class="str">${strengths}</ul>` : ''}
-      ${weaknesses ? `<h4 class="r">Areas to Improve</h4><ul class="wk">${weaknesses}</ul>` : ''}
-      ${report.overall_feedback ? `<h4 class="b">Feedback</h4><p style="font-size:var(--font-subhead);color:var(--label-secondary);margin-bottom:var(--space-4);">${report.overall_feedback}</p>` : ''}
-      ${courses ? `<h4 class="b">Recommended IBM SkillsBuild Courses</h4>${courses}` : ''}
-      <button class="cta-btn" onclick="closeIV()" style="margin-top:var(--space-6);width:100%;">Close</button>
-    </div>
-  `;
-
-  // Speak summary
-  speak(`Your interview is complete. You scored ${avg.toFixed(1)} out of 5 overall. ${report.overall_feedback || ''}`);
-}
-
-window.closeIV = function() {
-  const overlay = document.getElementById('iv-overlay');
-  overlay.classList.remove('open');
-  if (ivRec) { try { ivRec.abort(); } catch(_){} ivRec = null; }
-  ivSynth.cancel();
-  ivRecording = false;
-  ivSession = null;
-};
-
-// Load voices early
-if (ivSynth.onvoiceschanged !== undefined) {
-  ivSynth.onvoiceschanged = () => ivSynth.getVoices();
-}
 
 // ── Demo data ─────────────────────────────────────────────────────────────────
 function demoData() {
   return {
-    userProfile: { name: 'Alex Johnson', bio: 'CS student interested in AI and data science.', primary_email: 'alex@nccu.edu' },
+    userProfile: { name: 'Jordan Williams', bio: 'Junior CS student at NCCU. Strong in algorithms and databases — never touched Python for ML or any cloud platform.', primary_email: 'jordan@nccu.edu' },
     courses: [
-      { id:1, name:'Intro to Computer Science', course_code:'CS101', workflow_state:'completed' },
-      { id:2, name:'Calculus I', course_code:'MATH151', workflow_state:'completed' },
-      { id:3, name:'Data Structures & Algorithms', course_code:'CS201', workflow_state:'completed' },
-      { id:4, name:'Linear Algebra', course_code:'MATH260', workflow_state:'completed' },
-      { id:5, name:'Database Systems', course_code:'CS330', workflow_state:'completed' },
-      { id:6, name:'Software Engineering', course_code:'CS350', workflow_state:'available' },
-      { id:7, name:'Statistics for Data Science', course_code:'STAT310', workflow_state:'available' },
+      { id:1,  name:'Intro to Computer Science',    course_code:'CS101',  workflow_state:'completed' },
+      { id:2,  name:'Calculus I',                   course_code:'MATH151', workflow_state:'completed' },
+      { id:3,  name:'Data Structures & Algorithms', course_code:'CS201',  workflow_state:'completed' },
+      { id:4,  name:'Discrete Mathematics',         course_code:'MATH220', workflow_state:'completed' },
+      { id:5,  name:'Linear Algebra',               course_code:'MATH260', workflow_state:'completed' },
+      { id:6,  name:'Database Systems',             course_code:'CS330',  workflow_state:'completed' },
+      { id:7,  name:'Computer Organization',        course_code:'CS240',  workflow_state:'completed' },
+      { id:8,  name:'Software Engineering',         course_code:'CS350',  workflow_state:'available' },
+      { id:9,  name:'Statistics for Data Science',  course_code:'STAT310', workflow_state:'available' },
+      { id:10, name:'Operating Systems',            course_code:'CS360',  workflow_state:'available' },
     ],
     grades: {
-      '1':{ currentGrade:'A', currentScore:95 },
-      '2':{ currentGrade:'B+', currentScore:87 },
-      '3':{ currentGrade:'A-', currentScore:91 },
-      '4':{ currentGrade:'B', currentScore:82 },
-      '5':{ currentGrade:'A', currentScore:94 },
-      '6':{ currentGrade:'A', currentScore:96 },
-      '7':{ currentGrade:'B+', currentScore:88 },
+      '1': { currentGrade:'A',  currentScore:96 },
+      '2': { currentGrade:'B+', currentScore:88 },
+      '3': { currentGrade:'A',  currentScore:95 },
+      '4': { currentGrade:'B+', currentScore:87 },
+      '5': { currentGrade:'B',  currentScore:83 },
+      '6': { currentGrade:'A',  currentScore:94 },
+      '7': { currentGrade:'A-', currentScore:91 },
+      '8': { currentGrade:'A',  currentScore:97 },
+      '9': { currentGrade:'B+', currentScore:89 },
     },
     skillsbuild: {
-      profile: { name: 'Alex Johnson', email: 'alex@nccu.edu' },
+      profile: { name: 'Jordan Williams', email: 'jordan@nccu.edu' },
       completedCourses: [
-        { title: 'AI Foundations for Everyone', completedAt: '2025-11-10T00:00:00Z' },
-        { title: 'Agile Explorer', completedAt: '2025-12-01T00:00:00Z' },
+        { title: 'AI Foundations for Everyone', completedAt: '2025-09-14T00:00:00Z' },
+        { title: 'Agile Explorer',              completedAt: '2025-10-22T00:00:00Z' },
       ],
       credentials: [
-        { title: 'IBM AI Foundations Badge', earnedAt: '2025-11-15T00:00:00Z' },
+        { title: 'IBM AI Foundations Badge', earnedAt: '2025-09-20T00:00:00Z' },
       ],
     },
   };
