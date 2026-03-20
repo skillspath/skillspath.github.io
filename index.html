@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillsPath — IBM SkillsBuild Advisor</title>
+  <style>
+    :root {
+      --blue: #0f62fe;
+      --blue-h: #0353e9;
+      --dark: #161616;
+      --g90: #262626;
+      --g80: #393939;
+      --g70: #525252;
+      --g30: #c6c6c6;
+      --g20: #dde1e6;
+      --g10: #f4f4f4;
+      --white: #ffffff;
+      --green: #198038;
+      --purple: #6929c4;
+      --red: #da1e28;
+      --yellow: #f1c21b;
+      --font: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --mono: 'IBM Plex Mono', 'Courier New', monospace;
+      --r: 4px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--dark); color: var(--white); min-height: 100vh; }
+
+    /* header */
+    header {
+      background: var(--g90); border-bottom: 1px solid var(--g80);
+      padding: 0 2rem; height: 48px; display: flex; align-items: center; gap: 1rem;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .logo-ibm { font-size: 1.2rem; font-weight: 700; color: var(--blue); letter-spacing: -0.5px; }
+    .logo-div { width: 1px; height: 20px; background: var(--g80); }
+    .logo-name { font-size: 0.875rem; color: var(--g30); }
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; }
+    .auth-btn {
+      background: var(--blue); border: none; color: var(--white);
+      font-family: var(--font); font-size: 0.8125rem; font-weight: 600;
+      padding: 0.4rem 0.875rem; border-radius: var(--r); cursor: pointer;
+      transition: background 0.15s;
+    }
+    .auth-btn:hover { background: var(--blue-h); }
+    .auth-btn.secondary {
+      background: transparent; border: 1px solid var(--g70); color: var(--g30);
+    }
+    .auth-btn.secondary:hover { border-color: var(--g30); color: var(--white); }
+    .user-chip {
+      font-size: 0.75rem; color: var(--g30); display: flex; align-items: center; gap: 0.375rem;
+    }
+    .user-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+
+    /* main */
+    main { max-width: 860px; margin: 0 auto; padding: 3rem 2rem 4rem; }
+
+    .hero { margin-bottom: 2rem; }
+    .hero h1 { font-size: 2rem; font-weight: 300; line-height: 1.25; margin-bottom: 0.625rem; }
+    .hero h1 strong { font-weight: 600; color: var(--blue); }
+    .hero p { font-size: 0.9375rem; color: #a8b2bd; line-height: 1.6; max-width: 520px; }
+
+    /* canvas status */
+    .status-bar {
+      display: flex; align-items: center; gap: 0.625rem;
+      padding: 0.625rem 1rem; border-radius: var(--r);
+      font-size: 0.8125rem; margin-bottom: 1.5rem;
+      background: var(--g90); border: 1px solid var(--g80);
+    }
+    .s-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .status-bar.ok .s-dot { background: var(--green); }
+    .status-bar.err .s-dot { background: var(--red); }
+    .status-bar.wait .s-dot { background: var(--yellow); animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* card */
+    .card {
+      background: var(--g90); border: 1px solid var(--g80); border-radius: var(--r);
+      padding: 1.5rem; margin-bottom: 1.25rem;
+    }
+    .card h2 { font-size: 0.9375rem; font-weight: 600; margin-bottom: 1.125rem; }
+
+    label { display: block; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: #a8b2bd; margin-bottom: 0.375rem; }
+    textarea {
+      width: 100%; background: var(--dark); border: 1px solid var(--g80); border-radius: var(--r);
+      color: var(--white); font-family: var(--font); font-size: 0.9375rem;
+      padding: 0.75rem 1rem; outline: none; resize: vertical; min-height: 76px;
+      transition: border-color .15s;
+    }
+    textarea:focus { border-color: var(--blue); }
+    .help { font-size: 0.75rem; color: #6f7880; margin-top: 0.3rem; }
+
+    /* toggle */
+    .toggle-row { display: flex; align-items: center; gap: 0.625rem; cursor: pointer; user-select: none; margin-top: 1rem; }
+    .toggle-row input { display: none; }
+    .track { width: 36px; height: 20px; background: var(--g80); border-radius: 10px; position: relative; transition: background .2s; flex-shrink: 0; }
+    .thumb { position: absolute; width: 14px; height: 14px; background: var(--white); border-radius: 50%; top: 3px; left: 3px; transition: left .2s; }
+    .toggle-row input:checked + .track { background: var(--blue); }
+    .toggle-row input:checked + .track .thumb { left: 19px; }
+    .toggle-label { font-size: 0.875rem; color: #a8b2bd; }
+
+    /* submit */
+    .btn-primary {
+      width: 100%; margin-top: 1.125rem; background: var(--blue); border: none;
+      color: var(--white); font-family: var(--font); font-size: 0.9375rem;
+      font-weight: 600; padding: 0.75rem 1.5rem; border-radius: var(--r);
+      cursor: pointer; transition: background .15s;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--blue-h); }
+    .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* error */
+    .err-bar {
+      background: rgba(218,30,40,.1); border: 1px solid rgba(218,30,40,.4);
+      border-radius: var(--r); padding: .875rem 1rem; color: #ff8389;
+      font-size: .875rem; line-height: 1.5; margin-bottom: 1rem; display: none;
+    }
+
+    /* progress */
+    #progress { display: none; }
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+    .step-list li { display: flex; align-items: center; gap: .625rem; font-size: .875rem; color: #a8b2bd; }
+    .s-icon { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: .625rem; }
+    .s-icon.done { background: var(--green); }
+    .s-icon.active { border: 2px solid var(--blue); animation: pulse 1s infinite; }
+
+    /* courses */
+    #courses-section { display: none; }
+    .chips { display: flex; flex-wrap: wrap; gap: .4375rem; }
+    .chip {
+      background: var(--g80); border-radius: 2px;
+      padding: .2rem .5625rem; font-size: .6875rem; color: var(--g20); font-family: var(--mono);
+    }
+    .chip.done { border-left: 2px solid var(--green); }
+    .chip.active { border-left: 2px solid var(--blue); }
+
+    /* roadmap */
+    #roadmap { display: none; }
+    .rm-header { margin-bottom: 1.5rem; }
+    .rm-header h2 { font-size: 1.1875rem; font-weight: 600; margin-bottom: .5rem; }
+    .rm-summary { font-size: .9375rem; color: #a8b2bd; line-height: 1.6; }
+    .gap-row { display: flex; flex-wrap: wrap; gap: .4375rem; margin-top: .875rem; }
+    .gap-tag {
+      background: rgba(105,41,196,.2); border: 1px solid rgba(105,41,196,.5);
+      color: #be95ff; border-radius: 2px; padding: .175rem .5rem; font-size: .6875rem; font-weight: 500;
+    }
+    .rm-list { display: flex; flex-direction: column; gap: 1rem; }
+    .rm-item {
+      background: var(--g90); border: 1px solid var(--g80); border-radius: var(--r);
+      padding: 1.125rem; display: grid; grid-template-columns: 2.25rem 1fr auto;
+      gap: .875rem; align-items: start; opacity: 0; animation: fadeUp .35s ease forwards;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+    .rm-num {
+      width: 2.25rem; height: 2.25rem; background: var(--blue); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: .9375rem; font-weight: 700; flex-shrink: 0;
+    }
+    .rm-track { font-size: .6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--blue); margin-bottom: .2rem; }
+    .rm-title { font-size: .9375rem; font-weight: 600; margin-bottom: .3rem; }
+    .rm-meta { display: flex; gap: .625rem; margin-bottom: .4rem; align-items: center; }
+    .badge {
+      font-size: .625rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
+      padding: .15rem .4375rem; border-radius: 2px;
+    }
+    .badge.beginner { background: rgba(25,128,56,.2); color: #42be65; }
+    .badge.intermediate { background: rgba(243,154,0,.2); color: #f6c324; }
+    .badge.advanced { background: rgba(218,30,40,.2); color: #fa4d56; }
+    .rm-hrs { font-size: .75rem; color: #6f7880; }
+    .rm-reason { font-size: .8125rem; color: #a8b2bd; line-height: 1.5; }
+    .rm-action { flex-shrink: 0; }
+    .btn-outline {
+      background: transparent; border: 1px solid var(--blue); color: var(--blue);
+      border-radius: var(--r); font-family: var(--font); font-size: .8125rem;
+      font-weight: 600; padding: .45rem .875rem; cursor: pointer; text-decoration: none;
+      display: inline-block; white-space: nowrap; transition: background .15s, color .15s;
+    }
+    .btn-outline:hover { background: var(--blue); color: var(--white); }
+
+    /* auth gate */
+    #auth-gate {
+      background: rgba(15,98,254,.06); border: 1px solid rgba(15,98,254,.3);
+      border-radius: var(--r); padding: 1.25rem; margin-bottom: 1.25rem;
+      font-size: .875rem; color: #a8b2bd; line-height: 1.6;
+    }
+    #auth-gate strong { color: var(--white); }
+
+    footer { text-align: center; padding: 2rem; color: #4d5358; font-size: .75rem; }
+
+    @media (max-width: 580px) {
+      .rm-item { grid-template-columns: 2rem 1fr; }
+      .rm-action { grid-column: 2; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="logo-ibm">IBM</span>
+  <div class="logo-div"></div>
+  <span class="logo-name">SkillsPath</span>
+  <div class="header-right" id="header-auth">
+    <button class="auth-btn" id="btn-login" onclick="login()">Connect GitHub</button>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Your personalized<br /><strong>IBM SkillsBuild</strong> roadmap</h1>
+    <p>Connects your Canvas academic history to a curated learning path aligned with your career goals.</p>
+  </div>
+
+  <div id="auth-gate">
+    <strong>GitHub sign-in required</strong> — SkillsPath uses GitHub Models to run the AI advisor.
+    Connect your GitHub account above to get started.
+  </div>
+
+  <div class="status-bar wait" id="status-bar">
+    <div class="s-dot"></div>
+    <span id="status-txt">Checking Canvas connection…</span>
+  </div>
+
+  <div class="card">
+    <h2>Get your roadmap</h2>
+    <div style="margin-bottom:1.125rem">
+      <label for="interests">Career goal</label>
+      <textarea id="interests" placeholder="e.g. I want to work as a machine learning engineer at a healthcare company, building models that improve patient outcomes."></textarea>
+      <div class="help">Be specific — the more detail you give, the more targeted your roadmap will be.</div>
+    </div>
+    <label class="toggle-row">
+      <input type="checkbox" id="demo-mode" />
+      <div class="track"><div class="thumb"></div></div>
+      <span class="toggle-label">Demo mode — use sample student data</span>
+    </label>
+    <div class="err-bar" id="form-err"></div>
+    <button class="btn-primary" id="submit-btn" onclick="submit()" disabled>
+      Generate my learning roadmap →
+    </button>
+  </div>
+
+  <div class="card" id="progress">
+    <h2>Analyzing your profile</h2>
+    <ul class="step-list" id="steps"></ul>
+  </div>
+
+  <div class="card" id="courses-section">
+    <h2>Courses detected from Canvas</h2>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div id="roadmap">
+    <div class="rm-header">
+      <h2>Your IBM SkillsBuild Roadmap</h2>
+      <p class="rm-summary" id="rm-summary"></p>
+      <div class="gap-row" id="rm-gaps"></div>
+    </div>
+    <div class="rm-list" id="rm-list"></div>
+  </div>
+</main>
+
+<footer>Built at NCCU AI Hackathon · IBM SkillsBuild · 2025</footer>
+
+<script type="module">
+import { connectGitHub } from 'https://neevs.io/auth/connect.js';
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+let auth = JSON.parse(localStorage.getItem('sp-gh-auth') || 'null');
+
+window.login = async () => {
+  try {
+    auth = await connectGitHub('read:user', 'skillspath');
+    localStorage.setItem('sp-gh-auth', JSON.stringify(auth));
+    renderAuth();
+  } catch (e) {
+    showErr(String(e));
+  }
+};
+
+window.logout = () => {
+  auth = null;
+  localStorage.removeItem('sp-gh-auth');
+  renderAuth();
+};
+
+function renderAuth() {
+  const hdr = document.getElementById('header-auth');
+  const gate = document.getElementById('auth-gate');
+  const btn = document.getElementById('submit-btn');
+  if (auth?.token) {
+    hdr.innerHTML = `
+      <div class="user-chip"><div class="user-dot"></div>${auth.username || 'GitHub'}</div>
+      <button class="auth-btn secondary" onclick="logout()">Sign out</button>`;
+    gate.style.display = 'none';
+    btn.disabled = false;
+  } else {
+    hdr.innerHTML = `<button class="auth-btn" id="btn-login" onclick="login()">Connect GitHub</button>`;
+    gate.style.display = 'block';
+    btn.disabled = true;
+  }
+}
+renderAuth();
+
+// ── Canvas status ─────────────────────────────────────────────────────────────
+function postMessageRequest(type, responseType, timeout = 2000) {
+  return new Promise((resolve) => {
+    const handler = (event) => {
+      if (event.data?.type === responseType) {
+        window.removeEventListener('message', handler);
+        resolve(event.data.data || event.data);
+      }
+    };
+    window.addEventListener('message', handler);
+    window.postMessage({ type }, '*');
+    setTimeout(() => { window.removeEventListener('message', handler); resolve(null); }, timeout);
+  });
+}
+
+async function checkCanvas() {
+  const bar = document.getElementById('status-bar');
+  const txt = document.getElementById('status-txt');
+  const d = await postMessageRequest('sp-get-health', 'sp-health');
+  if (!d) {
+    bar.className = 'status-bar err';
+    txt.textContent = 'Extension bridge not detected. Serve index.html from localhost and ensure the extension is loaded.';
+    return;
+  }
+  const parts = [];
+  if (d.canvasCourses > 0) parts.push(`Canvas: ${d.canvasCourses} courses`);
+  if (d.sbCompleted > 0)   parts.push(`SkillsBuild: ${d.sbCompleted} completed`);
+  if (d.sbCredentials > 0) parts.push(`${d.sbCredentials} credentials`);
+  if (parts.length) {
+    bar.className = 'status-bar ok';
+    txt.textContent = parts.join(' · ');
+  } else {
+    bar.className = 'status-bar wait';
+    txt.textContent = 'Extension connected — open Canvas and SkillsBuild to sync data.';
+  }
+}
+checkCanvas();
+
+document.getElementById('demo-mode').addEventListener('change', function () {
+  const bar = document.getElementById('status-bar');
+  if (this.checked) {
+    bar.className = 'status-bar ok';
+    document.getElementById('status-txt').textContent = 'Demo mode — sample student data will be used';
+  } else {
+    checkCanvas();
+  }
+});
+
+// ── SkillsBuild catalog ───────────────────────────────────────────────────────
+const CATALOG = [
+  { id:"ai-foundations", title:"AI Foundations for Everyone", track:"Artificial Intelligence", level:"Beginner", duration_hours:6, skills:["artificial intelligence","machine learning","deep learning","AI ethics"], url:"https://skillsbuild.org/learn/course/ai-foundations", description:"Core AI concepts including ML, deep learning, and neural networks." },
+  { id:"ml-python", title:"Machine Learning with Python", track:"Artificial Intelligence", level:"Intermediate", duration_hours:20, skills:["machine learning","python","scikit-learn","data science","model evaluation"], url:"https://skillsbuild.org/learn/course/ml-python", description:"Build ML models using Python and scikit-learn." },
+  { id:"deep-learning", title:"Deep Learning & Neural Networks", track:"Artificial Intelligence", level:"Intermediate", duration_hours:24, skills:["deep learning","neural networks","tensorflow","keras","computer vision","NLP"], url:"https://skillsbuild.org/learn/course/deep-learning", description:"Deep networks, CNNs, RNNs, backpropagation." },
+  { id:"ai-ethics", title:"AI Ethics and Responsible AI", track:"Artificial Intelligence", level:"Beginner", duration_hours:4, skills:["AI ethics","responsible AI","bias detection","AI governance","fairness"], url:"https://skillsbuild.org/learn/course/ai-ethics", description:"Bias, fairness, transparency, IBM responsible AI framework." },
+  { id:"nlp", title:"Natural Language Processing & Text Analytics", track:"Artificial Intelligence", level:"Intermediate", duration_hours:16, skills:["NLP","natural language processing","transformers","BERT","sentiment analysis"], url:"https://skillsbuild.org/learn/course/nlp", description:"Tokenization, sentiment, NER, transformer models." },
+  { id:"generative-ai", title:"Generative AI Fundamentals", track:"Artificial Intelligence", level:"Beginner", duration_hours:8, skills:["generative AI","LLM","prompt engineering","watsonx","RAG","foundation models"], url:"https://skillsbuild.org/learn/course/generative-ai", description:"LLMs, diffusion models, prompt engineering, IBM watsonx." },
+  { id:"watsonx-ai", title:"IBM watsonx.ai for Developers", track:"Artificial Intelligence", level:"Intermediate", duration_hours:12, skills:["watsonx","foundation models","AI deployment","python","REST API"], url:"https://skillsbuild.org/learn/course/watsonx-ai", description:"Deploy and integrate IBM watsonx.ai foundation models." },
+  { id:"data-science-foundations", title:"Data Science Foundations", track:"Data Science", level:"Beginner", duration_hours:10, skills:["data science","statistics","data analysis","jupyter","pandas","data visualization"], url:"https://skillsbuild.org/learn/course/data-science", description:"Full data science lifecycle: collection, wrangling, visualization." },
+  { id:"data-analysis-python", title:"Data Analysis with Python", track:"Data Science", level:"Beginner", duration_hours:15, skills:["python","pandas","numpy","data analysis","statistics","matplotlib"], url:"https://skillsbuild.org/learn/course/data-analysis-python", description:"Real-world datasets with pandas, NumPy, matplotlib." },
+  { id:"data-viz", title:"Data Visualization with Python", track:"Data Science", level:"Beginner", duration_hours:10, skills:["data visualization","matplotlib","seaborn","plotly","dashboards"], url:"https://skillsbuild.org/learn/course/data-viz", description:"Interactive dashboards with matplotlib, seaborn, plotly." },
+  { id:"sql", title:"Databases and SQL for Data Science", track:"Data Science", level:"Beginner", duration_hours:12, skills:["SQL","databases","relational databases","IBM Db2","data querying"], url:"https://skillsbuild.org/learn/course/sql", description:"SQL queries, JOINs, aggregations, IBM Db2." },
+  { id:"big-data", title:"Big Data with Spark and Hadoop", track:"Data Science", level:"Intermediate", duration_hours:18, skills:["big data","Apache Spark","Hadoop","distributed computing","PySpark"], url:"https://skillsbuild.org/learn/course/big-data", description:"Large-scale data processing with Spark and Hadoop." },
+  { id:"cloud-essentials", title:"Introduction to Cloud Computing", track:"Cloud Computing", level:"Beginner", duration_hours:6, skills:["cloud computing","IaaS","PaaS","SaaS","virtualization","containers"], url:"https://skillsbuild.org/learn/course/cloud", description:"Cloud service and deployment models, core concepts." },
+  { id:"ibm-cloud", title:"IBM Cloud Essentials", track:"Cloud Computing", level:"Beginner", duration_hours:8, skills:["IBM Cloud","cloud deployment","cloud services","DevOps"], url:"https://skillsbuild.org/learn/course/ibm-cloud", description:"Deploy apps and manage IBM Cloud resources." },
+  { id:"containers", title:"Containers, Kubernetes & OpenShift", track:"Cloud Computing", level:"Intermediate", duration_hours:20, skills:["Docker","Kubernetes","containers","OpenShift","microservices","cloud-native"], url:"https://skillsbuild.org/learn/course/containers", description:"Build and orchestrate containerized apps at scale." },
+  { id:"cloud-dev", title:"Cloud Application Development & Microservices", track:"Cloud Computing", level:"Intermediate", duration_hours:18, skills:["microservices","REST API","serverless","cloud-native","Node.js"], url:"https://skillsbuild.org/learn/course/cloud-dev", description:"Microservices, REST APIs, serverless on IBM Cloud." },
+  { id:"cybersecurity", title:"Cybersecurity Fundamentals", track:"Cybersecurity", level:"Beginner", duration_hours:10, skills:["cybersecurity","network security","cryptography","threats","vulnerabilities"], url:"https://skillsbuild.org/learn/course/cybersecurity", description:"Threats, vulnerabilities, network security, cryptography." },
+  { id:"cyber-analyst", title:"IBM Cybersecurity Analyst", track:"Cybersecurity", level:"Intermediate", duration_hours:40, skills:["cybersecurity","security analyst","compliance","threat intelligence","forensics","SIEM"], url:"https://skillsbuild.org/learn/course/cyber-analyst", description:"Compliance, threat intelligence, forensics, SIEM." },
+  { id:"software-eng", title:"Introduction to Software Engineering", track:"Software Development", level:"Beginner", duration_hours:10, skills:["software engineering","Git","agile","software architecture","SDLC"], url:"https://skillsbuild.org/learn/course/software-eng", description:"Dev methodologies, Git, architecture, best practices." },
+  { id:"python-dev", title:"Python for AI & Software Development", track:"Software Development", level:"Beginner", duration_hours:16, skills:["python","OOP","API development","testing","Flask","FastAPI"], url:"https://skillsbuild.org/learn/course/python-dev", description:"Production Python: OOP, APIs, testing, AI integration." },
+  { id:"devops", title:"DevOps Fundamentals", track:"Software Development", level:"Intermediate", duration_hours:15, skills:["DevOps","CI/CD","Infrastructure as Code","monitoring","Jenkins"], url:"https://skillsbuild.org/learn/course/devops", description:"CI/CD pipelines, IaC, monitoring, SRE practices." },
+  { id:"agile", title:"Agile Explorer", track:"Software Development", level:"Beginner", duration_hours:3, skills:["agile","scrum","project management","sprint planning"], url:"https://skillsbuild.org/learn/course/agile", description:"Agile principles, Scrum, iterative delivery." },
+  { id:"design-thinking", title:"Enterprise Design Thinking", track:"Business & Professional Skills", level:"Beginner", duration_hours:5, skills:["design thinking","UX","problem solving","prototyping","user research"], url:"https://skillsbuild.org/learn/course/design-thinking", description:"IBM Design Thinking for complex business problems." },
+  { id:"blockchain", title:"Blockchain Essentials", track:"Blockchain", level:"Beginner", duration_hours:6, skills:["blockchain","distributed ledger","smart contracts","Hyperledger"], url:"https://skillsbuild.org/learn/course/blockchain", description:"DLT, consensus, smart contracts, Hyperledger." },
+  { id:"quantum", title:"Quantum Computing Fundamentals", track:"Quantum Computing", level:"Beginner", duration_hours:8, skills:["quantum computing","Qiskit","quantum algorithms","qubits"], url:"https://skillsbuild.org/learn/course/quantum", description:"Qubits, superposition, entanglement, IBM Qiskit." },
+  { id:"ai-healthcare", title:"AI in Healthcare & Life Sciences", track:"Healthcare AI", level:"Intermediate", duration_hours:10, skills:["healthcare AI","medical imaging","clinical data","FHIR","HL7","health informatics"], url:"https://skillsbuild.org/learn/course/ai-healthcare", description:"Clinical decision support, medical imaging, health data." },
+];
+
+function searchCatalog(query, n = 5) {
+  const terms = query.toLowerCase().split(/\s+/);
+  return CATALOG
+    .map(c => {
+      const hay = `${c.title} ${c.description} ${c.skills.join(' ')} ${c.track}`.toLowerCase();
+      const score = terms.reduce((s, t) => {
+        if (c.skills.some(sk => sk.toLowerCase().includes(t))) return s + 2;
+        return s + (hay.includes(t) ? 1 : 0);
+      }, 0);
+      return { score, c };
+    })
+    .filter(x => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, n)
+    .map(x => x.c);
+}
+
+function fmtCatalogResults(courses) {
+  if (!courses.length) return 'No matching courses found.';
+  return courses.map(c =>
+    `- [${c.track}] ${c.title} (${c.level}, ${c.duration_hours}h)\n  Skills: ${c.skills.slice(0,5).join(', ')}\n  id: ${c.id}`
+  ).join('\n');
+}
+
+// ── Canvas data ───────────────────────────────────────────────────────────────
+let _canvasCache = null;
+
+async function getCanvasData(demoMode) {
+  if (_canvasCache) return _canvasCache;
+  if (demoMode) {
+    _canvasCache = demoData();
+    return _canvasCache;
+  }
+  const d = await postMessageRequest('sp-get-data', 'sp-data');
+  if (!d) throw new Error('Extension bridge not responding. Is the extension loaded and index.html served from localhost?');
+  _canvasCache = d;
+  return _canvasCache;
+}
+
+function fmtCourses(courses, grades) {
+  if (!courses?.length) return 'No courses found.';
+  return courses.map(c => {
+    const cid = String(c.id || '');
+    let grade = '';
+    const g = grades?.[cid];
+    if (g) {
+      const gr = g.currentGrade || g.finalGrade || '';
+      const sc = g.currentScore || g.finalScore;
+      grade = gr && sc ? `${gr} (${sc}%)` : gr || (sc ? `${sc}%` : '');
+    } else {
+      const e = (c.enrollments || []).find(e => e.type === 'student');
+      if (e) {
+        const gr = e.computed_current_grade || e.computed_final_grade || '';
+        const sc = e.computed_current_score || e.computed_final_score;
+        grade = gr && sc ? `${gr} (${sc}%)` : gr || (sc ? `${sc}%` : '');
+      }
+    }
+    const state = c.workflow_state || '';
+    return `- ${c.name}${c.course_code ? ` [${c.course_code}]` : ''}${grade ? ` | Grade: ${grade}` : ''}${state === 'completed' || state === 'concluded' ? ' (completed)' : ''}`;
+  }).join('\n');
+}
+
+// ── Tools ─────────────────────────────────────────────────────────────────────
+const TOOLS = [
+  {
+    type: 'function',
+    function: {
+      name: 'fetch_canvas_profile',
+      description: "Fetch the student's Canvas LMS profile: name and bio.",
+      parameters: { type: 'object', properties: {}, required: [] },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'fetch_canvas_courses',
+      description: "Fetch the student's full Canvas course history with grades.",
+      parameters: { type: 'object', properties: {}, required: [] },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'fetch_skillsbuild_history',
+      description: "Fetch the student's IBM SkillsBuild learning history: courses already completed and credentials/badges earned. Use this to avoid recommending content they've already finished.",
+      parameters: { type: 'object', properties: {}, required: [] },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'search_skillsbuild_catalog',
+      description: 'Search the IBM SkillsBuild catalog. Call at least 3 times with different queries.',
+      parameters: {
+        type: 'object',
+        properties: { query: { type: 'string', description: 'Skill, topic, or technology to search for.' } },
+        required: ['query'],
+      },
+    },
+  },
+];
+
+async function executeTool(name, args, demoMode) {
+  if (name === 'fetch_canvas_profile') {
+    const data = await getCanvasData(demoMode);
+    const p = data.userProfile || {};
+    return { name: p.name || 'Student', bio: p.bio || '', email: p.primary_email || '' };
+  }
+  if (name === 'fetch_canvas_courses') {
+    const data = await getCanvasData(demoMode);
+    const courses = data.courses || [];
+    const grades = data.grades || {};
+    showCourses(courses);
+    return { courses_text: fmtCourses(courses, grades), count: courses.length };
+  }
+  if (name === 'fetch_skillsbuild_history') {
+    const data = await getCanvasData(demoMode);
+    const sb = data.skillsbuild || {};
+    const completed = (sb.completedCourses || []).map(c => `- ${c.title}${c.completedAt ? ` (completed ${c.completedAt.slice(0,10)})` : ''}`).join('\n') || 'None found.';
+    const creds = (sb.credentials || []).map(c => `- ${c.title}${c.earnedAt ? ` (earned ${c.earnedAt.slice(0,10)})` : ''}`).join('\n') || 'None found.';
+    return { completed_courses: completed, credentials: creds };
+  }
+  if (name === 'search_skillsbuild_catalog') {
+    const matches = searchCatalog(args.query || '', 5);
+    return { results: fmtCatalogResults(matches), count: matches.length };
+  }
+  return { error: `Unknown tool: ${name}` };
+}
+
+const SYSTEM = `You are an IBM SkillsBuild career advisor agent.
+
+1. Fetch the student's Canvas profile and full course history.
+2. Fetch their IBM SkillsBuild learning history (completed courses and credentials).
+3. Analyze their background: academic subjects, grades, what they've already done on SkillsBuild.
+4. Search the IBM SkillsBuild catalog at least 3 times with different queries.
+5. Produce a personalized, prioritized roadmap — only recommend courses they have NOT already completed.
+   If a course is already done, acknowledge it as a strength instead.
+
+Output ONLY this JSON when ready (no prose, no code fences):
+{
+  "student_name": "<name>",
+  "summary": "<2-3 sentences: background and what the goal requires>",
+  "skill_gaps": ["<gap1>", ...],
+  "roadmap": [
+    {
+      "priority": 1,
+      "course_id": "<id>",
+      "title": "<title>",
+      "track": "<track>",
+      "level": "<level>",
+      "duration_hours": <hours>,
+      "url": "<url>",
+      "reason": "<why this course for this student>"
+    }
+  ]
+}`;
+
+// ── Agent loop ────────────────────────────────────────────────────────────────
+window.submit = async () => {
+  const interests = document.getElementById('interests').value.trim();
+  const demoMode = document.getElementById('demo-mode').checked;
+
+  if (!auth?.token) return showErr('Please connect your GitHub account first.');
+  if (!interests) return showErr('Please describe your career goal.');
+
+  clearErr();
+  _canvasCache = null;
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Analyzing…';
+
+  document.getElementById('steps').innerHTML = '';
+  document.getElementById('chips').innerHTML = '';
+  document.getElementById('rm-list').innerHTML = '';
+  document.getElementById('rm-gaps').innerHTML = '';
+  document.getElementById('rm-summary').textContent = '';
+  document.getElementById('progress').style.display = 'block';
+  document.getElementById('courses-section').style.display = 'none';
+  document.getElementById('roadmap').style.display = 'none';
+
+  addStep('Starting analysis…');
+
+  const msgs = [
+    { role: 'system', content: SYSTEM },
+    { role: 'user', content: `My career goal: ${interests}\n\nFetch my Canvas data and generate an IBM SkillsBuild learning roadmap.` },
+  ];
+
+  try {
+    while (true) {
+      const res = await fetch('https://models.github.ai/inference/chat/completions', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'authorization': `Bearer ${auth.token}` },
+        body: JSON.stringify({
+          model: 'openai/gpt-4.1',
+          messages: msgs,
+          tools: TOOLS,
+          tool_choice: 'auto',
+          max_completion_tokens: 4096,
+          stream: true,
+        }),
+      });
+
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`API ${res.status}: ${txt.slice(0, 200)}`);
+      }
+
+      let textContent = '';
+      const tcMap = {};
+
+      for await (const chunk of parseOpenAIStream(res.body)) {
+        const delta = chunk.choices?.[0]?.delta;
+        if (!delta) continue;
+        if (delta.content) textContent += delta.content;
+        if (delta.tool_calls) {
+          for (const tc of delta.tool_calls) {
+            const e = tcMap[tc.index] ??= { id: '', name: '', arguments: '' };
+            if (tc.id) e.id = tc.id;
+            if (tc.function?.name) e.name = tc.function.name;
+            if (tc.function?.arguments) e.arguments += tc.function.arguments;
+          }
+        }
+      }
+
+      const toolCalls = Object.values(tcMap);
+      const assistantMsg = { role: 'assistant', content: textContent || null };
+      if (toolCalls.length) {
+        assistantMsg.tool_calls = toolCalls.map(tc => ({
+          id: tc.id, type: 'function', function: { name: tc.name, arguments: tc.arguments },
+        }));
+      }
+      msgs.push(assistantMsg);
+
+      if (!toolCalls.length) {
+        // Final response — parse JSON roadmap
+        let text = (textContent || '').trim();
+        if (text.startsWith('```')) {
+          text = text.split('\n').slice(1).join('\n').replace(/```$/, '').trim();
+        }
+        try {
+          showRoadmap(JSON.parse(text));
+        } catch {
+          showErr('Agent produced unexpected output. Raw: ' + text.slice(0, 200));
+        }
+        break;
+      }
+
+      // Execute tools
+      for (const tc of toolCalls) {
+        let args = {};
+        try { args = JSON.parse(tc.arguments || '{}'); } catch { /**/ }
+        const toolLabel = tc.name === 'fetch_canvas_profile' ? 'Fetching your Canvas profile…'
+          : tc.name === 'fetch_canvas_courses' ? 'Fetching your Canvas course history…'
+          : tc.name === 'fetch_skillsbuild_history' ? 'Fetching your IBM SkillsBuild progress…'
+          : `Searching IBM SkillsBuild catalog: "${args.query || ''}"…`;
+        addStep(toolLabel);
+        const result = await executeTool(tc.name, args, demoMode);
+        msgs.push({ role: 'tool', tool_call_id: tc.id, content: JSON.stringify(result) });
+      }
+    }
+  } catch (e) {
+    showErr(e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate my learning roadmap →';
+    // Mark all steps done
+    document.querySelectorAll('.s-icon.active').forEach(el => {
+      el.className = 's-icon done'; el.textContent = '✓';
+    });
+  }
+};
+
+async function* parseOpenAIStream(body) {
+  const reader = body.getReader();
+  const dec = new TextDecoder();
+  let buf = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    const lines = buf.split('\n');
+    buf = lines.pop() ?? '';
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const payload = line.slice(6).trim();
+      if (payload === '[DONE]') return;
+      try { yield JSON.parse(payload); } catch { /**/ }
+    }
+  }
+}
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function addStep(msg) {
+  const list = document.getElementById('steps');
+  const prev = list.querySelector('.s-icon.active');
+  if (prev) { prev.className = 's-icon done'; prev.textContent = '✓'; }
+  const li = document.createElement('li');
+  li.innerHTML = `<div class="s-icon active"></div><span>${msg}</span>`;
+  list.appendChild(li);
+}
+
+function showCourses(courses) {
+  const sec = document.getElementById('courses-section');
+  const chips = document.getElementById('chips');
+  chips.innerHTML = '';
+  courses.forEach(c => {
+    const el = document.createElement('div');
+    const state = c.workflow_state || '';
+    el.className = `chip ${state === 'completed' || state === 'concluded' ? 'done' : 'active'}`;
+    el.textContent = c.course_code || c.name;
+    el.title = c.name;
+    chips.appendChild(el);
+  });
+  sec.style.display = 'block';
+}
+
+function showRoadmap(data) {
+  document.getElementById('rm-summary').textContent = data.summary || '';
+  const gaps = document.getElementById('rm-gaps');
+  (data.skill_gaps || []).forEach(g => {
+    const el = document.createElement('span');
+    el.className = 'gap-tag'; el.textContent = g;
+    gaps.appendChild(el);
+  });
+  const list = document.getElementById('rm-list');
+  (data.roadmap || []).forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'rm-item';
+    el.style.animationDelay = `${i * 0.07}s`;
+    const lvl = (item.level || '').toLowerCase();
+    el.innerHTML = `
+      <div class="rm-num">${item.priority}</div>
+      <div>
+        <div class="rm-track">${item.track || ''}</div>
+        <div class="rm-title">${item.title}</div>
+        <div class="rm-meta">
+          <span class="badge ${lvl}">${item.level}</span>
+          <span class="rm-hrs">⏱ ${item.duration_hours}h</span>
+        </div>
+        <div class="rm-reason">${item.reason}</div>
+      </div>
+      <div class="rm-action">
+        <a class="btn-outline" href="${item.url}" target="_blank" rel="noopener">Start →</a>
+      </div>`;
+    list.appendChild(el);
+  });
+  document.getElementById('roadmap').style.display = 'block';
+}
+
+function showErr(msg) {
+  const el = document.getElementById('form-err');
+  el.textContent = msg; el.style.display = 'block';
+}
+function clearErr() { document.getElementById('form-err').style.display = 'none'; }
+
+// ── Demo data ─────────────────────────────────────────────────────────────────
+function demoData() {
+  return {
+    userProfile: { name: 'Alex Johnson', bio: 'CS student interested in AI and data science.', primary_email: 'alex@nccu.edu' },
+    courses: [
+      { id:1, name:'Intro to Computer Science', course_code:'CS101', workflow_state:'completed' },
+      { id:2, name:'Calculus I', course_code:'MATH151', workflow_state:'completed' },
+      { id:3, name:'Data Structures & Algorithms', course_code:'CS201', workflow_state:'completed' },
+      { id:4, name:'Linear Algebra', course_code:'MATH260', workflow_state:'completed' },
+      { id:5, name:'Database Systems', course_code:'CS330', workflow_state:'completed' },
+      { id:6, name:'Software Engineering', course_code:'CS350', workflow_state:'available' },
+      { id:7, name:'Statistics for Data Science', course_code:'STAT310', workflow_state:'available' },
+    ],
+    grades: {
+      '1':{ currentGrade:'A', currentScore:95 },
+      '2':{ currentGrade:'B+', currentScore:87 },
+      '3':{ currentGrade:'A-', currentScore:91 },
+      '4':{ currentGrade:'B', currentScore:82 },
+      '5':{ currentGrade:'A', currentScore:94 },
+      '6':{ currentGrade:'A', currentScore:96 },
+      '7':{ currentGrade:'B+', currentScore:88 },
+    },
+    skillsbuild: {
+      profile: { name: 'Alex Johnson', email: 'alex@nccu.edu' },
+      completedCourses: [
+        { title: 'AI Foundations for Everyone', completedAt: '2025-11-10T00:00:00Z' },
+        { title: 'Agile Explorer', completedAt: '2025-12-01T00:00:00Z' },
+      ],
+      credentials: [
+        { title: 'IBM AI Foundations Badge', earnedAt: '2025-11-15T00:00:00Z' },
+      ],
+    },
+  };
+}
+</script>
+</body>
+</html>
