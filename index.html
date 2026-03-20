@@ -204,6 +204,13 @@
       transition: border-color .15s var(--ease);
     }
     textarea:focus { border-color: var(--accent); }
+    input[type="password"] {
+      width: 100%; background: var(--bg); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-md);
+      color: var(--label); font-family: var(--font-stack); font-size: var(--font-body);
+      padding: var(--space-3) var(--space-4); outline: none;
+      transition: border-color .15s var(--ease);
+    }
+    input[type="password"]:focus { border-color: var(--accent); }
     .help { font-size: var(--font-footnote); color: var(--label-tertiary); margin-top: var(--space-1); }
 
     /* ── Toggle ── */
@@ -547,6 +554,10 @@
       <div class="track"><div class="thumb"></div></div>
       <span class="toggle-label">Use local Claude proxy (127.0.0.1:7337)</span>
     </label>
+    <div id="openai-key-row" style="margin-top:var(--space-3)">
+      <label for="openai-key" style="font-size:var(--font-footnote);color:var(--label-secondary);display:block;margin-bottom:var(--space-1)">OpenAI API key <span style="opacity:.5">(optional — skips GitHub rate limits)</span></label>
+      <input type="password" id="openai-key" placeholder="sk-..." autocomplete="off" oninput="onApiKeyInput(this.value)" />
+    </div>
     <div class="err-bar" id="form-err" role="alert" aria-live="assertive"></div>
     <button class="btn-primary" id="submit-btn" onclick="submit()" disabled>
       Generate my learning roadmap →
@@ -660,7 +671,7 @@ function renderAuth() {
         </div>
       </div>`;
     gate.style.display = 'none';
-    btn.disabled = !document.getElementById('interests')?.value.trim();
+    updateSubmitBtn();
   } else {
     hdr.innerHTML = `<button class="auth-btn" id="btn-login" onclick="login()">Connect GitHub</button>`;
     gate.style.display = 'block';
@@ -669,10 +680,11 @@ function renderAuth() {
 }
 renderAuth();
 
-document.getElementById('interests').addEventListener('input', () => {
-  const btn = document.getElementById('submit-btn');
-  if (btn && auth?.token) btn.disabled = !document.getElementById('interests').value.trim();
-});
+// Restore saved OpenAI key
+const savedKey = getOpenAIKey();
+if (savedKey) document.getElementById('openai-key').value = savedKey;
+
+document.getElementById('interests').addEventListener('input', updateSubmitBtn);
 
 // ── Canvas status ─────────────────────────────────────────────────────────────
 function postMessageRequest(type, responseType, timeout = 2000) {
@@ -1121,8 +1133,22 @@ document.getElementById('resume-file').addEventListener('change', async (e) => {
 // ── AI provider ───────────────────────────────────────────────────────────────
 const PROXY_URL = 'http://127.0.0.1:7337/v1/messages';
 const PROXY_KEY = 'sp-use-proxy';
+const OAIKEY_KEY = 'sp-openai-key';
 
 function useProxy() { return localStorage.getItem(PROXY_KEY) === 'true'; }
+function getOpenAIKey() { return localStorage.getItem(OAIKEY_KEY) || ''; }
+
+window.onApiKeyInput = (val) => {
+  localStorage.setItem(OAIKEY_KEY, val.trim());
+  updateSubmitBtn();
+};
+
+function updateSubmitBtn() {
+  const btn = document.getElementById('submit-btn');
+  const hasGoal = !!document.getElementById('interests')?.value.trim();
+  const hasAuth = useProxy() || !!getOpenAIKey() || !!auth?.token;
+  if (btn) btn.disabled = !(hasGoal && hasAuth);
+}
 
 async function checkProxy() {
   try {
@@ -1189,11 +1215,17 @@ async function callApi(msgs, tools, toolChoice) {
         }),
       });
     } else {
-      res = await fetch('https://models.github.ai/inference/chat/completions', {
+      const oaiKey = getOpenAIKey();
+      const token = oaiKey || auth?.token;
+      const endpoint = oaiKey
+        ? 'https://api.openai.com/v1/chat/completions'
+        : 'https://models.github.ai/inference/chat/completions';
+      const model = oaiKey ? 'gpt-4.1' : selectedModel;
+      res = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'content-type': 'application/json', 'authorization': `Bearer ${auth.token}` },
+        headers: { 'content-type': 'application/json', 'authorization': `Bearer ${token}` },
         body: JSON.stringify({
-          model: selectedModel, messages: msgs, tools, tool_choice: toolChoice,
+          model, messages: msgs, tools, tool_choice: toolChoice,
           max_completion_tokens: 4096, stream: true,
         }),
       });
@@ -1282,7 +1314,7 @@ window.submit = async () => {
   const interests = document.getElementById('interests').value.trim();
   const demoMode = document.getElementById('demo-mode').checked;
 
-  if (!useProxy() && !auth?.token) return showErr('Please connect your GitHub account first.');
+  if (!useProxy() && !getOpenAIKey() && !auth?.token) return showErr('Please connect your GitHub account first.');
   if (!interests) return showErr('Please describe your career goal.');
 
   if (!demoMode) {
