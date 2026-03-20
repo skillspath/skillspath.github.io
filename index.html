@@ -314,7 +314,7 @@
       font-size: var(--font-caption); font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
       color: var(--success); margin-bottom: var(--space-3);
     }
-    .profile-live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
+    .profile-live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
     .profile-name { font-size: var(--font-title1); font-weight: 300; margin-bottom: var(--space-1); }
     .profile-name strong { font-weight: 600; }
     .profile-meta { font-size: var(--font-subhead); color: var(--label-tertiary); margin-bottom: var(--space-5); }
@@ -952,7 +952,7 @@ async function executeTool(name, args, demoMode) {
     const courses = data.courses || [];
     const grades = data.grades || {};
     const profile = data.userProfile || {};
-    showProfileCard(profile.name || 'Student', profile.bio || '', courses, grades);
+    showProfileCard(profile.name || 'Student', profile.bio || '', courses, grades, demoMode);
     return { courses_text: fmtCourses(courses, grades), count: courses.length };
   }
   if (name === 'fetch_resume') {
@@ -1000,6 +1000,7 @@ const SYSTEM = `You are an IBM SkillsBuild career advisor agent.
    In each "reason" field, reference the student's ACTUAL courses and grades by name
    (e.g. "You earned an A in Database Systems but have no cloud exposure — this bridges directly
    to IBM Cloud roles"). Generic reasons like "this course teaches Python" are not acceptable.
+   Every reason MUST cite the student's name, a specific course name, and its grade from their record.
 
 Output ONLY this JSON when ready (no prose, no code fences):
 {
@@ -1304,7 +1305,12 @@ function completeToolCard(id, result, toolName) {
   card.querySelector('.tc-body').innerHTML = getToolSummary(result, toolName);
 }
 
-function showProfileCard(name, bio, courses, grades) {
+function showProfileCard(name, bio, courses, grades, isDemo) {
+  const liveEl = document.getElementById('profile-card').querySelector('.profile-live');
+  if (liveEl) {
+    liveEl.textContent = isDemo ? 'Demo · Sample student' : 'Live · Canvas data';
+    liveEl.style.color = isDemo ? 'var(--warning)' : '';
+  }
   document.getElementById('profile-name').innerHTML = `<strong>${name}</strong>`;
   document.getElementById('profile-meta').textContent = bio || '';
   const container = document.getElementById('profile-courses');
@@ -1384,7 +1390,7 @@ function showErr(msg) {
 }
 function clearErr() { document.getElementById('form-err').style.display = 'none'; }
 
-const DEMO_GOAL = "I want to work as an AI Engineer at IBM building healthcare AI systems, using Python and machine learning to improve patient outcomes.";
+const DEMO_GOAL = "I want to work as a machine learning engineer at a healthcare company.";
 
 window.onDemoToggle = (on) => {
   const ta = document.getElementById('interests');
@@ -1395,7 +1401,7 @@ window.onDemoToggle = (on) => {
 // ── Demo data ─────────────────────────────────────────────────────────────────
 function demoData() {
   return {
-    userProfile: { name: 'Alex Johnson', bio: 'CS student interested in AI and data science.', primary_email: 'alex@nccu.edu' },
+    userProfile: { name: 'Jordan Williams', bio: 'CS student at NCCU interested in AI and data science.', primary_email: 'jordan@nccu.edu' },
     courses: [
       { id:1, name:'Intro to Computer Science', course_code:'CS101', workflow_state:'completed' },
       { id:2, name:'Calculus I', course_code:'MATH151', workflow_state:'completed' },
