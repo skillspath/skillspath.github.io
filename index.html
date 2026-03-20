@@ -806,12 +806,16 @@ window.submit = async () => {
         break;
       }
 
-      // Execute tools
+      // Execute tools — minimum 900ms display so judges can read each card
+      const sleep = ms => new Promise(r => setTimeout(r, ms));
       for (const tc of toolCalls) {
         let args = {};
         try { args = JSON.parse(tc.arguments || '{}'); } catch { /**/ }
         addToolCard(tc.id, getToolIcon(tc.name), getToolLabel(tc.name, args), tc.name);
-        const result = await executeTool(tc.name, args, demoMode);
+        const [result] = await Promise.all([
+          executeTool(tc.name, args, demoMode),
+          sleep(900),
+        ]);
         completeToolCard(tc.id, result, tc.name);
         msgs.push({ role: 'tool', tool_call_id: tc.id, content: JSON.stringify(result) });
       }
@@ -958,7 +962,7 @@ function showRoadmap(data) {
         <div class="rm-reason">${item.reason}</div>
       </div>
       <div class="rm-action">
-        <a class="btn-outline" href="https://skills.yourlearning.ibm.com/search?q=${encodeURIComponent(item.title)}" target="_blank" rel="noopener">Start →</a>
+        <a class="btn-outline" href="https://skillsbuild.org/?s=${encodeURIComponent(item.title)}" target="_blank" rel="noopener">Start →</a>
       </div>`;
     list.appendChild(el);
   });
