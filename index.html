@@ -656,8 +656,7 @@ const PROXY_KEY = 'sp-use-proxy';
 const OAIKEY_KEY = 'sp-openai-key';
 const WX_APIKEY_KEY = 'sp-wx-apikey';
 const WX_PROJECT_KEY = 'sp-wx-project';
-const WX_ENDPOINT = 'https://us-south.ml.cloud.ibm.com/ml/v1/text/chat?version=2023-05-29';
-const WX_MODEL = 'ibm/granite-3-8b-instruct';
+const WX_ENDPOINT = 'http://127.0.0.1:7337/watsonx';  // proxy handles IAM server-side
 
 function useProxy() { return localStorage.getItem(PROXY_KEY) === 'true'; }
 function getOpenAIKey() { return localStorage.getItem(OAIKEY_KEY) || ''; }
@@ -678,7 +677,6 @@ function updateWatsonxBadge() {
 }
 window.onWatsonxApiKeyInput = (val) => {
   localStorage.setItem(WX_APIKEY_KEY, val.trim());
-  _wxToken = null; // invalidate cached token when key changes
   updateWatsonxBadge();
   updateSubmitBtn();
   renderAuth(); // re-evaluate gate visibility
@@ -697,21 +695,6 @@ function updateSubmitBtn() {
   if (btn) btn.disabled = !(hasGoal && hasAuth);
 }
 
-// ── IBM IAM token cache ───────────────────────────────────────────────────────
-let _wxToken = null, _wxTokenExp = 0;
-async function getWatsonxToken() {
-  if (_wxToken && Date.now() < _wxTokenExp) return _wxToken;
-  const res = await fetch('https://iam.cloud.ibm.com/identity/token', {
-    method: 'POST',
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-    body: `grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey=${encodeURIComponent(getWatsonxApiKey())}`,
-  });
-  if (!res.ok) throw new Error('IBM IAM auth failed — check your API key.');
-  const data = await res.json();
-  _wxToken = data.access_token;
-  _wxTokenExp = Date.now() + (data.expires_in - 60) * 1000;
-  return _wxToken;
-}
 
 // ── Auth + model selection ─────────────────────────────────────────────────────
 let auth = JSON.parse(localStorage.getItem('sp-gh-auth') || 'null');
@@ -1309,13 +1292,14 @@ async function callApi(msgs, tools, toolChoice) {
   while (true) {
     let res, provider;
     if (useWatsonx()) {
-      const token = await getWatsonxToken();
       res = await fetch(WX_ENDPOINT, {
         method: 'POST',
-        headers: { 'content-type': 'application/json', 'authorization': `Bearer ${token}` },
+        headers: {
+          'content-type': 'application/json',
+          'ibm-api-key': getWatsonxApiKey(),
+          'ibm-project-id': getWatsonxProjectId(),
+        },
         body: JSON.stringify({
-          model_id: WX_MODEL,
-          project_id: getWatsonxProjectId(),
           messages: msgs, tools, tool_choice: toolChoice,
           max_tokens: 4096, stream: true,
         }),
