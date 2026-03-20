@@ -700,8 +700,8 @@ function renderAuth() {
         </div>
       </div>`;
     gate.style.display = 'none';
-    const savedKey = getOpenAIKey();
-    if (savedKey) setTimeout(() => { const el = document.getElementById('openai-key'); if (el) el.value = savedKey; }, 0);
+    const el = document.getElementById('openai-key');
+    if (el) el.value = getOpenAIKey();
     updateSubmitBtn();
   } else {
     hdr.innerHTML = `<button class="auth-btn" id="btn-login" onclick="login()">Connect GitHub</button>`;
