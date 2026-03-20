@@ -542,6 +542,11 @@
       <div class="track"><div class="thumb"></div></div>
       <span class="toggle-label">Try with sample student — no Canvas account needed</span>
     </label>
+    <label class="toggle-row" id="proxy-row" style="display:none">
+      <input type="checkbox" id="proxy-toggle" onchange="onProxyToggle(this.checked)" />
+      <div class="track"><div class="thumb"></div></div>
+      <span class="toggle-label">Use local Claude proxy (127.0.0.1:7337)</span>
+    </label>
     <div class="err-bar" id="form-err" role="alert" aria-live="assertive"></div>
     <button class="btn-primary" id="submit-btn" onclick="submit()" disabled>
       Generate my learning roadmap →
@@ -734,6 +739,19 @@ setTimeout(async () => {
     }
   }
 }, 2000);
+
+// Probe proxy on load; show toggle if reachable
+checkProxy().then(available => {
+  if (available) {
+    const row = document.getElementById('proxy-row');
+    row.style.display = '';
+    document.getElementById('proxy-toggle').checked = useProxy();
+  }
+});
+
+window.onProxyToggle = (checked) => {
+  localStorage.setItem(PROXY_KEY, String(checked));
+};
 
 document.getElementById('demo-mode').addEventListener('change', function () {
   const bar = document.getElementById('status-bar');
@@ -1102,7 +1120,9 @@ document.getElementById('resume-file').addEventListener('change', async (e) => {
 
 // ── AI provider ───────────────────────────────────────────────────────────────
 const PROXY_URL = 'http://127.0.0.1:7337/v1/messages';
-let proxyAvailable = false;
+const PROXY_KEY = 'sp-use-proxy';
+
+function useProxy() { return localStorage.getItem(PROXY_KEY) === 'true'; }
 
 async function checkProxy() {
   try {
@@ -1110,8 +1130,8 @@ async function checkProxy() {
     setTimeout(() => ac.abort(), 2000);
     const res = await fetch(PROXY_URL, { method: 'POST', signal: ac.signal,
       headers: { 'content-type': 'application/json' }, body: '{}' });
-    proxyAvailable = res.status < 500; // 400 = reachable but bad body; 5xx = down
-  } catch { proxyAvailable = false; }
+    return res.status < 500;
+  } catch { return false; }
 }
 
 function oaiToolsToAnthropic(tools) {
@@ -1156,7 +1176,7 @@ function oaiMsgsToAnthropic(msgs) {
 async function callApi(msgs, tools, toolChoice) {
   while (true) {
     let res;
-    if (proxyAvailable) {
+    if (useProxy()) {
       const { system, messages } = oaiMsgsToAnthropic(msgs);
       res = await fetch(PROXY_URL, {
         method: 'POST',
@@ -1177,16 +1197,16 @@ async function callApi(msgs, tools, toolChoice) {
           max_completion_tokens: 4096, stream: true,
         }),
       });
-    }
 
-    if (res.status === 429) {
-      const btn = document.getElementById('submit-btn');
-      for (let i = 30; i > 0; i--) {
-        btn.textContent = `Rate limited — retrying in ${i}s…`;
-        await new Promise(r => setTimeout(r, 1000));
+      if (res.status === 429) {
+        const btn = document.getElementById('submit-btn');
+        for (let i = 30; i > 0; i--) {
+          btn.textContent = `Rate limited — retrying in ${i}s…`;
+          await new Promise(r => setTimeout(r, 1000));
+        }
+        btn.textContent = 'Analyzing…';
+        continue;
       }
-      btn.textContent = 'Analyzing…';
-      continue;
     }
 
     if (!res.ok) {
@@ -1195,7 +1215,7 @@ async function callApi(msgs, tools, toolChoice) {
       throw new Error(`Request failed (${res.status}): ${txt.slice(0, 200)}`);
     }
 
-    return { body: res.body, provider: proxyAvailable ? 'anthropic' : 'openai' };
+    return { body: res.body, provider: useProxy() ? 'anthropic' : 'openai' };
   }
 }
 
@@ -1262,8 +1282,7 @@ window.submit = async () => {
   const interests = document.getElementById('interests').value.trim();
   const demoMode = document.getElementById('demo-mode').checked;
 
-  await checkProxy();
-  if (!proxyAvailable && !auth?.token) return showErr('Please connect your GitHub account first.');
+  if (!useProxy() && !auth?.token) return showErr('Please connect your GitHub account first.');
   if (!interests) return showErr('Please describe your career goal.');
 
   if (!demoMode) {
