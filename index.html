@@ -301,7 +301,7 @@ function renderAuth() {
 renderAuth();
 
 // ── Canvas status ─────────────────────────────────────────────────────────────
-function postMessageRequest(type, responseType, timeout = 2000) {
+function postMessageRequest(type, responseType, timeout = 1000) {
   return new Promise((resolve) => {
     const handler = (event) => {
       if (event.data?.type === responseType) {
@@ -318,10 +318,17 @@ function postMessageRequest(type, responseType, timeout = 2000) {
 async function checkCanvas() {
   const bar = document.getElementById('status-bar');
   const txt = document.getElementById('status-txt');
-  const d = await postMessageRequest('sp-get-health', 'sp-health');
+
+  // Retry a few times — content script may inject slightly after page JS runs
+  let d = null;
+  for (let i = 0; i < 5 && !d; i++) {
+    if (i > 0) await new Promise(r => setTimeout(r, 400));
+    d = await postMessageRequest('sp-get-health', 'sp-health');
+  }
+
   if (!d) {
     bar.className = 'status-bar err';
-    txt.textContent = 'Extension bridge not detected. Serve index.html from localhost and ensure the extension is loaded.';
+    txt.textContent = 'Extension bridge not detected. Make sure the SkillsPath extension is loaded in Chrome.';
     return;
   }
   const parts = [];
