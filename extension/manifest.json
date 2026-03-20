@@ -12,7 +12,8 @@
     "*://*.edu/*",
     "*://skills.yourlearning.ibm.com/*",
     "*://*.yourlearning.ibm.com/*",
-    "http://localhost/*"
+    "http://localhost/*",
+    "https://skillspath.github.io/*"
   ],
 
   "background": {
@@ -38,7 +39,7 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["http://localhost/*"],
+      "matches": ["http://localhost/*", "https://skillspath.github.io/*"],
       "js": ["bridge.js"],
       "run_at": "document_idle"
     }
