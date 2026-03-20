@@ -421,7 +421,7 @@
       </div>
       <div class="install-step">
         <div class="step-num">3</div>
-        <span>Click <strong>Load unpacked</strong> → select the unzipped <code>extension</code> folder. Then open <a href="https://canvas.instructure.com" target="_blank" rel="noopener">Canvas</a> and <a href="https://skills.yourlearning.ibm.com" target="_blank" rel="noopener">IBM SkillsBuild</a> to sync your data.</span>
+        <span>Click <strong>Load unpacked</strong> → select the unzipped <code>extension</code> folder. Then open your school's Canvas and <a href="https://skills.yourlearning.ibm.com" target="_blank" rel="noopener">IBM SkillsBuild</a> to sync your data.</span>
       </div>
     </div>
     <div class="install-actions">
@@ -596,7 +596,6 @@ function renderStatus(d) {
     return;
   }
   if (banner) banner.classList.add('hidden');
-  const canvasHref = d.lastCanvasHost || 'https://canvas.instructure.com';
   const parts = [];
   if (d.canvasCourses > 0) parts.push(`Canvas: ${d.canvasCourses} courses`);
   if (d.sbCompleted > 0)   parts.push(`SkillsBuild: ${d.sbCompleted} completed`);
@@ -606,7 +605,10 @@ function renderStatus(d) {
     txt.textContent = parts.join(' · ');
   } else {
     bar.className = 'status-bar wait';
-    txt.innerHTML = `Extension connected — open <a href="${canvasHref}" target="_blank" rel="noopener" style="color:var(--accent)">Canvas</a> and <a href="https://skills.yourlearning.ibm.com" target="_blank" rel="noopener" style="color:var(--accent)">IBM SkillsBuild</a> to sync your data.`;
+    const canvasLink = d.lastCanvasHost
+      ? `<a href="${d.lastCanvasHost}" target="_blank" rel="noopener" style="color:var(--accent)">Canvas</a>`
+      : `your school's Canvas`;
+    txt.innerHTML = `Extension connected — open ${canvasLink} and <a href="https://skills.yourlearning.ibm.com" target="_blank" rel="noopener" style="color:var(--accent)">IBM SkillsBuild</a> to sync your data.`;
   }
 }
 
@@ -890,7 +892,7 @@ window.submit = async () => {
   if (!demoMode) {
     const health = await postMessageRequest('sp-get-health', 'sp-health');
     if (!health?.canvasCourses) {
-      const canvasUrl = health?.lastCanvasHost || 'https://canvas.instructure.com';
+      const canvasUrl = health?.lastCanvasHost || 'your school\'s Canvas';
       return showErr(`No Canvas data yet — open ${canvasUrl} in your browser so the extension can sync your courses, or enable "Try with sample student" to demo without Canvas.`);
     }
   }
