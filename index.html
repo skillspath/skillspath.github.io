@@ -301,7 +301,7 @@ function renderAuth() {
 renderAuth();
 
 // ── Canvas status ─────────────────────────────────────────────────────────────
-function postMessageRequest(type, responseType, timeout = 1000) {
+function postMessageRequest(type, responseType, timeout = 2000) {
   return new Promise((resolve) => {
     const handler = (event) => {
       if (event.data?.type === responseType) {
@@ -315,20 +315,12 @@ function postMessageRequest(type, responseType, timeout = 1000) {
   });
 }
 
-async function checkCanvas() {
+function renderStatus(d) {
   const bar = document.getElementById('status-bar');
   const txt = document.getElementById('status-txt');
-
-  // Retry a few times — content script may inject slightly after page JS runs
-  let d = null;
-  for (let i = 0; i < 5 && !d; i++) {
-    if (i > 0) await new Promise(r => setTimeout(r, 400));
-    d = await postMessageRequest('sp-get-health', 'sp-health');
-  }
-
   if (!d) {
     bar.className = 'status-bar err';
-    txt.textContent = 'Extension bridge not detected. Make sure the SkillsPath extension is loaded in Chrome.';
+    txt.textContent = 'Extension not detected. Reload the extension in chrome://extensions, then refresh this page.';
     return;
   }
   const parts = [];
@@ -343,7 +335,21 @@ async function checkCanvas() {
     txt.textContent = 'Extension connected — open Canvas and SkillsBuild to sync data.';
   }
 }
-checkCanvas();
+
+// Bridge pushes health data immediately on injection. Listen for it.
+// Falls back to an explicit request after 2s in case of load order variance.
+let _statusRendered = false;
+window.addEventListener('message', (event) => {
+  if (event.data?.type === 'sp-health' && !_statusRendered) {
+    _statusRendered = true;
+    renderStatus(event.data.data);
+  }
+});
+setTimeout(async () => {
+  if (_statusRendered) return;
+  const d = await postMessageRequest('sp-get-health', 'sp-health');
+  if (!_statusRendered) { _statusRendered = true; renderStatus(d); }
+}, 2000);
 
 document.getElementById('demo-mode').addEventListener('change', function () {
   const bar = document.getElementById('status-bar');
@@ -351,7 +357,7 @@ document.getElementById('demo-mode').addEventListener('change', function () {
     bar.className = 'status-bar ok';
     document.getElementById('status-txt').textContent = 'Demo mode — sample student data will be used';
   } else {
-    checkCanvas();
+    _statusRendered = false; renderStatus(null); postMessageRequest('sp-get-health', 'sp-health').then(d => { _statusRendered = true; renderStatus(d); });
   }
 });
 
