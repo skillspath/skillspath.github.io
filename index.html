@@ -487,7 +487,13 @@ async function getCanvasData(demoMode) {
   }
   const d = await postMessageRequest('sp-get-data', 'sp-data');
   if (!d) throw new Error('Extension bridge not detected. Install the SkillsPath Chrome extension, then visit Canvas or SkillsBuild to sync your data.');
-  _canvasCache = d;
+  // Bridge returns { canvas: { courses, grades, userProfile }, skillsbuild: {...} }
+  _canvasCache = {
+    userProfile: d.canvas?.userProfile || {},
+    courses:     d.canvas?.courses     || [],
+    grades:      d.canvas?.grades      || {},
+    skillsbuild: d.skillsbuild         || {},
+  };
   return _canvasCache;
 }
 
@@ -843,7 +849,7 @@ function showRoadmap(data) {
         <div class="rm-reason">${item.reason}</div>
       </div>
       <div class="rm-action">
-        <a class="btn-outline" href="${item.url}" target="_blank" rel="noopener">Start →</a>
+        <a class="btn-outline" href="https://skills.yourlearning.ibm.com/search?q=${encodeURIComponent(item.title)}" target="_blank" rel="noopener">Start →</a>
       </div>`;
     list.appendChild(el);
   });
