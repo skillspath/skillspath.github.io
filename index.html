@@ -164,6 +164,24 @@
     .install-step code { background: var(--surface-raised); padding: 1px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.8125rem; }
     .install-actions { display: flex; gap: var(--space-3); flex-wrap: wrap; }
 
+    /* ── Resume upload ── */
+    .resume-upload {
+      display: flex; align-items: center; margin-bottom: var(--space-4);
+      padding: var(--space-3) var(--space-4); border-radius: var(--radius-md);
+      border: 1px dashed var(--separator); cursor: pointer;
+      transition: border-color .2s var(--ease);
+    }
+    .resume-upload:hover { border-color: rgba(255,255,255,0.25); }
+    .resume-upload label { font-size: var(--font-subhead); cursor: pointer; color: var(--label-secondary); }
+    .resume-upload.has-file { border-color: var(--success); border-style: solid; }
+    .resume-upload.has-file label { color: var(--label); }
+
+    /* ── Privacy note ── */
+    .privacy-note {
+      margin-top: var(--space-3); font-size: var(--font-caption);
+      color: var(--label-tertiary); line-height: 1.5;
+    }
+
     /* ── Card ── */
     .card {
       background: var(--surface); border: 1px solid var(--separator); border-radius: var(--radius-lg);
@@ -250,6 +268,7 @@
     .tc-icon.icon-courses  { background: var(--purple); }
     .tc-icon.icon-sb       { background: var(--success); }
     .tc-icon.icon-search   { background: var(--accent-cyan); }
+    .tc-icon.icon-resume   { background: #8a3ffc; }
     .tc-card.pending .tc-icon { opacity: .55; animation: pulse 1.2s infinite; }
     .tc-card.done .tc-icon   { opacity: 1; }
     .tc-label  { font-size: var(--font-body); font-weight: 600; flex: 1; }
@@ -418,6 +437,14 @@
       <textarea id="interests" autocomplete="off" spellcheck="false" placeholder="e.g. I want to work as a machine learning engineer at a healthcare company, building models that improve patient outcomes."></textarea>
       <div class="help">Be specific — the more detail you give, the more targeted your roadmap will be.</div>
     </div>
+    <div class="resume-upload" id="resume-upload-area">
+      <label for="resume-file">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px;margin-right:4px"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg>
+        Upload resume <span style="color:var(--label-tertiary);font-weight:400">(optional — PDF or .txt)</span>
+      </label>
+      <input type="file" id="resume-file" accept=".pdf,.txt" style="display:none" />
+      <span id="resume-name" style="font-size:var(--font-footnote);color:var(--label-secondary);margin-left:.5rem"></span>
+    </div>
     <label class="toggle-row">
       <input type="checkbox" id="demo-mode" />
       <div class="track"><div class="thumb"></div></div>
@@ -427,6 +454,10 @@
     <button class="btn-primary" id="submit-btn" onclick="submit()" disabled>
       Generate my learning roadmap →
     </button>
+    <div class="privacy-note">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-1px;margin-right:4px;opacity:.6"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+      Your academic data never leaves your browser — no server, no tracking.
+    </div>
   </div>
 
   <div id="agent-panel">
@@ -453,7 +484,7 @@
   </div>
 </main>
 
-<footer>Built by Jaideep Aher, Roshan Gill &amp; Jonas Neves · NCCU AI Hackathon · IBM SkillsBuild · 2026</footer>
+<footer>Built by Jaideep Aher, Roshan Gill &amp; Jonas Neves at <abbr title="North Carolina Central University — HBCU">NCCU</abbr> · IBM SkillsBuild AI Hackathon · 2026</footer>
 
 <script type="module">
 import { connectGitHub } from 'https://neevs.io/auth/connect.js';
@@ -769,6 +800,10 @@ async function executeTool(name, args, demoMode) {
     showProfileCard(profile.name || 'Student', profile.bio || '', courses, grades);
     return { courses_text: fmtCourses(courses, grades), count: courses.length };
   }
+  if (name === 'fetch_resume') {
+    if (!window._resumeText) return { text: 'No resume uploaded.' };
+    return { text: window._resumeText };
+  }
   if (name === 'fetch_skillsbuild_history') {
     const data = await getCanvasData(demoMode);
     const sb = data.skillsbuild || {};
@@ -811,6 +846,39 @@ Output ONLY this JSON when ready (no prose, no code fences):
   ]
 }`;
 
+// ── Resume parsing ────────────────────────────────────────────────────────────
+window._resumeText = null;
+
+document.getElementById('resume-file').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const area = document.getElementById('resume-upload-area');
+  const nameEl = document.getElementById('resume-name');
+  nameEl.textContent = file.name;
+
+  if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+    try {
+      const pdfjsLib = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.mjs');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.mjs';
+      const buf = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+      const pages = await Promise.all(
+        Array.from({ length: pdf.numPages }, (_, i) =>
+          pdf.getPage(i + 1).then(p => p.getTextContent()).then(tc => tc.items.map(it => it.str).join(' '))
+        )
+      );
+      window._resumeText = pages.join('\n').trim();
+    } catch {
+      nameEl.textContent += ' (parse error — try .txt)';
+      return;
+    }
+  } else {
+    window._resumeText = await file.text();
+  }
+
+  if (window._resumeText) area.classList.add('has-file');
+});
+
 // ── Agent loop ────────────────────────────────────────────────────────────────
 window.submit = async () => {
   const interests = document.getElementById('interests').value.trim();
@@ -843,9 +911,22 @@ window.submit = async () => {
   document.getElementById('profile-card').style.display = 'none';
   document.getElementById('roadmap').style.display = 'none';
 
+  const activeTools = window._resumeText
+    ? [...TOOLS, {
+        type: 'function',
+        function: {
+          name: 'fetch_resume',
+          description: "Fetch the student's uploaded resume text. Use this to understand work experience, projects, and skills not captured in Canvas or SkillsBuild.",
+          parameters: { type: 'object', properties: {}, required: [] },
+        },
+      }]
+    : TOOLS;
+
+  const resumeHint = window._resumeText ? '\n\nThe student has uploaded a resume — call fetch_resume to incorporate their work experience and projects into your analysis.' : '';
+
   const msgs = [
     { role: 'system', content: SYSTEM },
-    { role: 'user', content: `My career goal: ${interests}\n\nFetch my Canvas data and generate an IBM SkillsBuild learning roadmap.` },
+    { role: 'user', content: `My career goal: ${interests}\n\nFetch my Canvas data and generate an IBM SkillsBuild learning roadmap.${resumeHint}` },
   ];
 
   try {
@@ -856,7 +937,7 @@ window.submit = async () => {
         body: JSON.stringify({
           model: selectedModel,
           messages: msgs,
-          tools: TOOLS,
+          tools: activeTools,
           tool_choice: 'auto',
           max_completion_tokens: 4096,
           stream: true,
@@ -958,18 +1039,21 @@ const TOOL_SVG = {
   fetch_skillsbuild_history: `<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935z"/></svg>`,
 };
 const SEARCH_SVG = `<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>`;
+const RESUME_SVG = `<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zM14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/></svg>`;
 const TOOL_ICON_CLASS = {
-  fetch_canvas_profile: 'icon-profile',
-  fetch_canvas_courses: 'icon-courses',
+  fetch_canvas_profile:    'icon-profile',
+  fetch_canvas_courses:    'icon-courses',
   fetch_skillsbuild_history: 'icon-sb',
+  fetch_resume:            'icon-resume',
 };
 
-function getToolIcon(name) { return TOOL_SVG[name] || SEARCH_SVG; }
+function getToolIcon(name) { return TOOL_SVG[name] || (name === 'fetch_resume' ? RESUME_SVG : SEARCH_SVG); }
 
 function getToolLabel(name, args) {
   if (name === 'fetch_canvas_profile')    return 'Canvas Profile';
   if (name === 'fetch_canvas_courses')    return 'Canvas Courses';
   if (name === 'fetch_skillsbuild_history') return 'SkillsBuild History';
+  if (name === 'fetch_resume')             return 'Resume';
   return `Catalog: "${args.query || ''}"`;
 }
 
@@ -1002,6 +1086,10 @@ function getToolSummary(result, toolName) {
     const completed = (result.completed_courses || '').split('\n').filter(l => l.trim().startsWith('-')).length;
     const hasCreds = (result.credentials || '').includes('- ');
     return `${completed > 0 ? `<strong>${completed}</strong> completed courses` : 'No completed courses yet'}${hasCreds ? ' · credentials found' : ''}`;
+  }
+  if (toolName === 'fetch_resume') {
+    const words = (result.text || '').split(/\s+/).filter(Boolean).length;
+    return words > 5 ? `<strong>${words}</strong> words parsed` : 'No resume content';
   }
   // catalog search
   const chips = (result.results || '').split('\n')
