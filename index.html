@@ -758,6 +758,13 @@ window.submit = async () => {
   if (!auth?.token) return showErr('Please connect your GitHub account first.');
   if (!interests) return showErr('Please describe your career goal.');
 
+  if (!demoMode) {
+    const health = await postMessageRequest('sp-get-health', 'sp-health');
+    if (!health?.canvasCourses) {
+      return showErr('No Canvas data yet — open Canvas LMS in your browser so the extension can sync your courses, or enable "Try with sample student" to demo without Canvas.');
+    }
+  }
+
   clearErr();
   _canvasCache = null;
 
