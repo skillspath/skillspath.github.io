@@ -93,6 +93,6 @@ No data is sent to any external server. All API calls go directly from your brow
 
 ## Team
 
-Built by Jonas Neves and Claude (Anthropic) at the IBM × NCCU AI Hackathon, March 2026.
+Built by Jaideep Aher, Roshan Gill, and Jonas Neves at the IBM × NCCU AI Hackathon, March 2026.
 
 > IBM built the catalog. IBM built the engine. We built the on-ramp.
