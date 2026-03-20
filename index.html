@@ -378,6 +378,127 @@
       .rm-item { grid-template-columns: 2rem 1fr; }
       .rm-action { grid-column: 2; }
     }
+
+    /* ── Mock Interview CTA ── */
+    .interview-cta {
+      display: none; margin-top: var(--space-8);
+      background: linear-gradient(135deg, rgba(15,98,254,.12), rgba(105,41,196,.12));
+      border: 1px solid rgba(15,98,254,.3); border-radius: var(--radius-lg);
+      padding: var(--space-8); text-align: center;
+    }
+    .interview-cta h3 { font-size: var(--font-title3); font-weight: 600; margin-bottom: var(--space-2); }
+    .interview-cta p { font-size: var(--font-body); color: var(--label-secondary); margin-bottom: var(--space-6); }
+    .interview-cta .cta-btn {
+      background: var(--accent); color: white; border: none; border-radius: var(--radius-sm);
+      padding: var(--space-3) var(--space-6); font-size: var(--font-body); font-weight: 600;
+      cursor: pointer; font-family: var(--font-stack); transition: background .15s var(--ease);
+    }
+    .interview-cta .cta-btn:hover { background: var(--accent-hover); }
+
+    /* ── Voice Interview Modal ── */
+    .iv-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.75);
+      display: none; align-items: center; justify-content: center; z-index: 200;
+    }
+    .iv-overlay.open { display: flex; }
+    .iv-modal {
+      background: var(--surface); border: 1px solid var(--separator); border-radius: var(--radius-lg);
+      width: 90%; max-width: 640px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+    .iv-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--separator);
+    }
+    .iv-head h3 { font-size: var(--font-headline); font-weight: 600; }
+    .iv-close { background: none; border: none; color: var(--label-tertiary); font-size: 1.5rem; cursor: pointer; }
+    .iv-close:hover { color: var(--label); }
+    .iv-body { padding: var(--space-6); overflow-y: auto; flex: 1; }
+
+    .iv-progress { display: flex; gap: 4px; margin-bottom: var(--space-5); }
+    .iv-dot { flex: 1; height: 4px; background: var(--separator); border-radius: 2px; }
+    .iv-dot.done { background: var(--success); }
+    .iv-dot.now  { background: var(--accent); }
+
+    .iv-status { text-align: center; font-size: var(--font-subhead); color: var(--label-secondary); margin-bottom: var(--space-4); }
+
+    .iv-speaker {
+      background: var(--surface-raised); border: 1px solid var(--separator); border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-5); margin-bottom: var(--space-4); font-size: var(--font-body); line-height: 1.6;
+    }
+    .iv-speaker .iv-lbl {
+      font-size: var(--font-caption); text-transform: uppercase; letter-spacing: .08em;
+      font-weight: 600; margin-bottom: var(--space-1);
+    }
+    .iv-speaker.interviewer .iv-lbl { color: var(--accent); }
+    .iv-speaker.you .iv-lbl { color: var(--accent-cyan); }
+    .iv-speaker.you.empty { color: var(--label-tertiary); font-style: italic; }
+
+    .iv-feedback {
+      background: rgba(243,194,27,.08); border: 1px solid rgba(243,194,27,.25);
+      color: #f6c324; border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-5); margin-bottom: var(--space-4);
+      font-size: var(--font-subhead); line-height: 1.5; display: none;
+    }
+    .iv-feedback .iv-score {
+      display: inline-block; background: rgba(243,194,27,.2);
+      padding: 2px 10px; border-radius: 10px; font-size: var(--font-subhead); font-weight: 700; margin-right: 8px;
+    }
+
+    .iv-mic-wrap { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); padding: var(--space-4) 0; }
+    .iv-mic {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--success); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .12s var(--ease), box-shadow .12s var(--ease);
+    }
+    .iv-mic:hover { transform: scale(1.06); }
+    .iv-mic:active { transform: scale(.94); }
+    .iv-mic.rec {
+      background: var(--danger);
+      animation: mic-pulse 1.4s ease infinite;
+    }
+    .iv-mic:disabled { opacity: .3; cursor: not-allowed; transform: none; }
+    .iv-mic svg { width: 28px; height: 28px; fill: white; }
+    @keyframes mic-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(218,30,40,.4); }
+      70%  { box-shadow: 0 0 0 18px rgba(218,30,40,0); }
+      100% { box-shadow: 0 0 0 0 rgba(218,30,40,0); }
+    }
+    .iv-mic-label { font-size: var(--font-subhead); color: var(--label-secondary); font-weight: 500; }
+    .iv-mic-label.rec { color: var(--danger); }
+
+    .iv-spin {
+      width: 24px; height: 24px; border: 3px solid var(--separator); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin .8s linear infinite; margin: var(--space-5) auto; display: none;
+    }
+
+    /* Report card inside modal */
+    .iv-report {
+      background: var(--bg); border: 1px solid var(--separator); border-radius: var(--radius-lg);
+      padding: var(--space-6); margin-top: var(--space-4);
+    }
+    .iv-report-score { text-align: center; margin-bottom: var(--space-5); }
+    .iv-report-score .big { font-size: 3rem; font-weight: 700; color: var(--accent); }
+    .iv-report-score .sub { font-size: var(--font-subhead); color: var(--label-tertiary); margin-top: var(--space-1); }
+    .iv-report h4 { font-size: var(--font-caption); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; margin-bottom: var(--space-2); }
+    .iv-report h4.g { color: var(--success); }
+    .iv-report h4.r { color: var(--danger); }
+    .iv-report h4.b { color: var(--accent); }
+    .iv-report ul { list-style: none; padding: 0; margin-bottom: var(--space-4); }
+    .iv-report li { font-size: var(--font-subhead); color: var(--label-secondary); padding: 3px 0 3px 14px; position: relative; }
+    .iv-report li::before { content:''; position: absolute; left:0; top:9px; width:5px; height:5px; border-radius:50%; }
+    .iv-report .str li::before { background: var(--success); }
+    .iv-report .wk li::before  { background: var(--danger); }
+    .iv-course {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--surface); border: 1px solid var(--separator); border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4); margin-bottom: var(--space-2);
+    }
+    .iv-course .c-name { font-size: var(--font-subhead); font-weight: 500; }
+    .iv-course .c-meta { font-size: var(--font-caption); color: var(--label-tertiary); }
+    .iv-course a { color: var(--accent); font-size: var(--font-subhead); font-weight: 500; text-decoration: none; }
+    .iv-course a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -481,8 +602,51 @@
       <div class="gap-row" id="rm-gaps"></div>
     </div>
     <div class="rm-list" id="rm-list"></div>
+
+    <!-- Mock Interview CTA — shown after roadmap -->
+    <div class="interview-cta" id="interview-cta">
+      <h3>Ready to test yourself?</h3>
+      <p>Practice a 5-question voice mock interview targeting your skill gaps. Get scored and get course recommendations.</p>
+      <button class="cta-btn" onclick="openMockInterview()">Start Voice Mock Interview</button>
+    </div>
   </div>
 </main>
+
+<!-- Voice Interview Modal -->
+<div class="iv-overlay" id="iv-overlay">
+  <div class="iv-modal">
+    <div class="iv-head">
+      <h3 id="iv-title">Mock Interview</h3>
+      <button class="iv-close" onclick="closeIV()">&times;</button>
+    </div>
+    <div class="iv-body">
+      <div class="iv-progress" id="iv-progress"></div>
+      <div class="iv-status" id="iv-status">Starting interview...</div>
+
+      <div class="iv-speaker interviewer" id="iv-interviewer">
+        <div class="iv-lbl">Interviewer</div>
+        <div id="iv-q"></div>
+      </div>
+
+      <div class="iv-speaker you" id="iv-you" style="display:none">
+        <div class="iv-lbl">You</div>
+        <div id="iv-a"></div>
+      </div>
+
+      <div class="iv-feedback" id="iv-fb"></div>
+
+      <div class="iv-mic-wrap" id="iv-mic-wrap" style="display:none">
+        <button class="iv-mic" id="iv-mic" onclick="toggleIVMic()">
+          <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+        </button>
+        <div class="iv-mic-label" id="iv-mic-label">Tap to speak</div>
+      </div>
+
+      <div class="iv-spin" id="iv-spin"></div>
+      <div id="iv-report"></div>
+    </div>
+  </div>
+</div>
 
 <footer>Built by Jaideep Aher, Roshan Gill &amp; Jonas Neves at <abbr title="North Carolina Central University — HBCU">NCCU</abbr> · IBM SkillsBuild AI Hackathon · 2026</footer>
 
@@ -807,6 +971,7 @@ async function executeTool(name, args, demoMode) {
   if (name === 'fetch_skillsbuild_history') {
     const data = await getCanvasData(demoMode);
     const sb = data.skillsbuild || {};
+    window._lastSkillsBuild = sb;
     const completed = (sb.completedCourses || []).map(c => `- ${c.title}${c.completedAt ? ` (completed ${c.completedAt.slice(0,10)})` : ''}`).join('\n') || 'None found.';
     const creds = (sb.credentials || []).map(c => `- ${c.title}${c.earnedAt ? ` (earned ${c.earnedAt.slice(0,10)})` : ''}`).join('\n') || 'None found.';
     return { completed_courses: completed, credentials: creds };
@@ -1159,8 +1324,14 @@ function showRoadmap(data) {
       </div>`;
     list.appendChild(el);
   });
+  // Store skill gaps for mock interview
+  window._ivSkillGaps = data.skill_gaps || [];
+  window._ivRoadmap = data.roadmap || [];
+
   const rm = document.getElementById('roadmap');
   rm.style.display = 'block';
+  // Show mock interview CTA
+  document.getElementById('interview-cta').style.display = 'block';
   setTimeout(() => rm.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 }
 
@@ -1169,6 +1340,282 @@ function showErr(msg) {
   el.textContent = msg; el.style.display = 'block';
 }
 function clearErr() { document.getElementById('form-err').style.display = 'none'; }
+
+// ── Voice Mock Interview ──────────────────────────────────────────────────────
+const IV_API = 'http://localhost:8000'; // InternMatch FastAPI backend (run locally)
+let ivSession = null;   // { session_id, questions, current_question, ... }
+let ivRec = null;        // SpeechRecognition instance
+let ivRecording = false;
+let ivSynth = window.speechSynthesis;
+
+window.openMockInterview = async function() {
+  const overlay = document.getElementById('iv-overlay');
+  overlay.classList.add('open');
+  resetIVUI();
+
+  // Gather context from roadmap
+  const targetRole = document.getElementById('interests')?.value.trim().slice(0, 80) || 'Software Engineering Intern';
+  const skillGaps = (window._ivSkillGaps || []).slice(0, 8);
+  const userSkills = [];
+  // Collect completed SkillsBuild courses as proxy for user skills
+  const sbData = window._lastSkillsBuild;
+  const completedCourses = [];
+  if (sbData?.completedCourses) {
+    sbData.completedCourses.forEach(c => completedCourses.push(c.title));
+  }
+
+  document.getElementById('iv-status').textContent = 'Preparing your interview...';
+  document.getElementById('iv-spin').style.display = 'block';
+  document.getElementById('iv-title').textContent = `Mock Interview — ${targetRole}`;
+
+  try {
+    const resp = await fetch(`${IV_API}/interview/start`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        job_title: targetRole,
+        company: 'Tech Company',
+        job_description: `Internship role requiring: ${skillGaps.join(', ')}`,
+        skills_found: skillGaps,
+        user_skills: completedCourses,
+        user_skill_gaps: skillGaps,
+      }),
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    ivSession = data;
+    showIVQuestion(data.question, data.current_question, data.total_questions);
+  } catch (e) {
+    document.getElementById('iv-status').textContent = 'Error: ' + e.message;
+    document.getElementById('iv-spin').style.display = 'none';
+  }
+};
+
+function resetIVUI() {
+  document.getElementById('iv-q').textContent = '';
+  document.getElementById('iv-a').textContent = '';
+  document.getElementById('iv-fb').innerHTML = '';
+  document.getElementById('iv-fb').style.display = 'none';
+  document.getElementById('iv-you').style.display = 'none';
+  document.getElementById('iv-mic-wrap').style.display = 'none';
+  document.getElementById('iv-spin').style.display = 'none';
+  document.getElementById('iv-report').innerHTML = '';
+  document.getElementById('iv-progress').innerHTML = '';
+  document.getElementById('iv-status').textContent = '';
+  ivSession = null;
+  ivRecording = false;
+  if (ivRec) { try { ivRec.abort(); } catch(_){} ivRec = null; }
+  ivSynth.cancel();
+}
+
+function showIVQuestion(question, current, total) {
+  document.getElementById('iv-spin').style.display = 'none';
+
+  // Progress dots
+  const prog = document.getElementById('iv-progress');
+  prog.innerHTML = '';
+  for (let i = 1; i <= total; i++) {
+    const dot = document.createElement('span');
+    dot.className = 'iv-dot' + (i < current ? ' done' : '') + (i === current ? ' active' : '');
+    prog.appendChild(dot);
+  }
+
+  document.getElementById('iv-status').textContent = `Question ${current} of ${total}`;
+  document.getElementById('iv-q').textContent = question;
+  document.getElementById('iv-interviewer').style.display = 'block';
+  document.getElementById('iv-you').style.display = 'none';
+  document.getElementById('iv-fb').style.display = 'none';
+  document.getElementById('iv-a').textContent = '';
+
+  // Speak the question, then show mic
+  speak(question, () => {
+    document.getElementById('iv-mic-wrap').style.display = 'flex';
+    document.getElementById('iv-mic-label').textContent = 'Tap to speak your answer';
+  });
+}
+
+function speak(text, onEnd) {
+  ivSynth.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 1.0;
+  utter.pitch = 1.0;
+  // Pick a good voice
+  const voices = ivSynth.getVoices();
+  const preferred = voices.find(v => v.name.includes('Samantha')) ||
+                    voices.find(v => v.lang.startsWith('en') && v.localService) ||
+                    voices[0];
+  if (preferred) utter.voice = preferred;
+  utter.onend = () => { if (onEnd) onEnd(); };
+  ivSynth.speak(utter);
+}
+
+window.toggleIVMic = function() {
+  if (ivRecording) {
+    stopIVRec();
+  } else {
+    startIVRec();
+  }
+};
+
+function startIVRec() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    document.getElementById('iv-mic-label').textContent = 'Speech not supported in this browser';
+    return;
+  }
+  ivRec = new SpeechRec();
+  ivRec.continuous = true;
+  ivRec.interimResults = true;
+  ivRec.lang = 'en-US';
+
+  let transcript = '';
+  ivRec.onresult = (e) => {
+    transcript = '';
+    for (let i = 0; i < e.results.length; i++) {
+      transcript += e.results[i][0].transcript;
+    }
+    document.getElementById('iv-a').textContent = transcript;
+    document.getElementById('iv-you').style.display = 'block';
+  };
+  ivRec.onerror = (e) => {
+    if (e.error !== 'aborted') {
+      document.getElementById('iv-mic-label').textContent = 'Mic error: ' + e.error + '. Tap to retry.';
+    }
+    ivRecording = false;
+    document.getElementById('iv-mic').classList.remove('recording');
+  };
+  ivRec.onend = () => {
+    if (ivRecording) {
+      // Auto-submit when user stops speaking
+      ivRecording = false;
+      document.getElementById('iv-mic').classList.remove('recording');
+      const answer = document.getElementById('iv-a').textContent.trim();
+      if (answer) {
+        submitIVAnswer(answer);
+      } else {
+        document.getElementById('iv-mic-label').textContent = 'No speech detected. Tap to try again.';
+      }
+    }
+  };
+
+  ivRec.start();
+  ivRecording = true;
+  document.getElementById('iv-mic').classList.add('recording');
+  document.getElementById('iv-mic-label').textContent = 'Listening… tap to stop';
+  document.getElementById('iv-you').style.display = 'block';
+  document.getElementById('iv-a').textContent = '';
+}
+
+function stopIVRec() {
+  ivRecording = false;
+  document.getElementById('iv-mic').classList.remove('recording');
+  if (ivRec) {
+    try { ivRec.stop(); } catch(_){}
+  }
+}
+
+async function submitIVAnswer(answer) {
+  document.getElementById('iv-mic-wrap').style.display = 'none';
+  document.getElementById('iv-spin').style.display = 'block';
+  document.getElementById('iv-status').textContent = 'Evaluating your answer...';
+
+  try {
+    const resp = await fetch(`${IV_API}/interview/answer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session_id: ivSession.session_id,
+        answer: answer,
+      }),
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    document.getElementById('iv-spin').style.display = 'none';
+
+    if (data.interview_complete) {
+      // Show final report
+      renderIVReport(data);
+    } else {
+      // Show feedback, then next question
+      if (data.feedback) {
+        const fb = document.getElementById('iv-fb');
+        fb.style.display = 'block';
+        fb.innerHTML = `<strong>Score: ${data.score}/5</strong><br>${data.feedback}`;
+        speak(data.feedback, () => {
+          setTimeout(() => {
+            showIVQuestion(data.question, data.current_question, data.total_questions);
+          }, 500);
+        });
+      } else {
+        showIVQuestion(data.question, data.current_question, data.total_questions);
+      }
+    }
+  } catch (e) {
+    document.getElementById('iv-spin').style.display = 'none';
+    document.getElementById('iv-status').textContent = 'Error: ' + e.message;
+    document.getElementById('iv-mic-wrap').style.display = 'flex';
+  }
+}
+
+function renderIVReport(data) {
+  const report = data.report || {};
+  const rEl = document.getElementById('iv-report');
+  document.getElementById('iv-status').textContent = 'Interview Complete!';
+  document.getElementById('iv-mic-wrap').style.display = 'none';
+  document.getElementById('iv-interviewer').style.display = 'none';
+  document.getElementById('iv-you').style.display = 'none';
+  document.getElementById('iv-fb').style.display = 'none';
+
+  // Build progress to show all done
+  const prog = document.getElementById('iv-progress');
+  prog.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    const dot = document.createElement('span');
+    dot.className = 'iv-dot done';
+    prog.appendChild(dot);
+  }
+
+  const avg = report.average_score || 0;
+  const strengths = (report.strengths || []).map(s => `<li>${s}</li>`).join('');
+  const weaknesses = (report.weaknesses || []).map(w => `<li>${w}</li>`).join('');
+  const courses = (report.recommended_courses || []).map(c => `
+    <div class="iv-course">
+      <div><div class="c-name">${c.course_name || c.title || 'Course'}</div>
+      <div class="c-meta">${c.hours || ''}h · ${c.credential || ''}</div></div>
+      ${c.url ? `<a href="${c.url}" target="_blank">Start on SkillsBuild →</a>` : ''}
+    </div>
+  `).join('');
+
+  rEl.innerHTML = `
+    <div class="iv-report">
+      <div class="iv-report-score"><div class="big">${avg.toFixed(1)}</div><div class="sub">out of 5</div></div>
+      ${strengths ? `<h4 class="g">Strengths</h4><ul class="str">${strengths}</ul>` : ''}
+      ${weaknesses ? `<h4 class="r">Areas to Improve</h4><ul class="wk">${weaknesses}</ul>` : ''}
+      ${report.overall_feedback ? `<h4 class="b">Feedback</h4><p style="font-size:var(--font-subhead);color:var(--label-secondary);margin-bottom:var(--space-4);">${report.overall_feedback}</p>` : ''}
+      ${courses ? `<h4 class="b">Recommended IBM SkillsBuild Courses</h4>${courses}` : ''}
+      <button class="cta-btn" onclick="closeIV()" style="margin-top:var(--space-6);width:100%;">Close</button>
+    </div>
+  `;
+
+  // Speak summary
+  speak(`Your interview is complete. You scored ${avg.toFixed(1)} out of 5 overall. ${report.overall_feedback || ''}`);
+}
+
+window.closeIV = function() {
+  const overlay = document.getElementById('iv-overlay');
+  overlay.classList.remove('open');
+  if (ivRec) { try { ivRec.abort(); } catch(_){} ivRec = null; }
+  ivSynth.cancel();
+  ivRecording = false;
+  ivSession = null;
+};
+
+// Load voices early
+if (ivSynth.onvoiceschanged !== undefined) {
+  ivSynth.onvoiceschanged = () => ivSynth.getVoices();
+}
 
 // ── Demo data ─────────────────────────────────────────────────────────────────
 function demoData() {
