@@ -85,3 +85,9 @@ No data is sent to any external server. All API calls go directly from your brow
 Built by Jaideep Aher, Roshan Gill, and Jonas Neves at the IBM × NCCU AI Hackathon, March 2026.
 
 > IBM built the catalog. IBM built the engine. We built the on-ramp.
+
+---
+
+## Slides
+
+Pitch deck (9 slides with speaker notes): [agora.neevs.io/slides/skillspath/](https://agora.neevs.io/slides/skillspath/)

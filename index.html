@@ -1102,8 +1102,13 @@ window.submit = async () => {
     { role: 'user', content: `My career goal: ${interests}\n\nFetch my Canvas data and generate an IBM SkillsBuild learning roadmap.${resumeHint}` },
   ];
 
+  let firstCall = true;
   try {
     while (true) {
+      const toolChoice = firstCall
+        ? { type: 'function', function: { name: 'match_ibm_role' } }
+        : 'auto';
+      firstCall = false;
       const res = await fetch('https://models.github.ai/inference/chat/completions', {
         method: 'POST',
         headers: { 'content-type': 'application/json', 'authorization': `Bearer ${auth.token}` },
@@ -1111,7 +1116,7 @@ window.submit = async () => {
           model: selectedModel,
           messages: msgs,
           tools: activeTools,
-          tool_choice: 'auto',
+          tool_choice: toolChoice,
           max_completion_tokens: 4096,
           stream: true,
         }),
