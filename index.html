@@ -376,7 +376,7 @@
     <h2>Get your roadmap</h2>
     <div style="margin-bottom:1.125rem">
       <label for="interests">Career goal</label>
-      <textarea id="interests" placeholder="e.g. I want to work as a machine learning engineer at a healthcare company, building models that improve patient outcomes."></textarea>
+      <textarea id="interests" autocomplete="off" spellcheck="false" placeholder="e.g. I want to work as a machine learning engineer at a healthcare company, building models that improve patient outcomes."></textarea>
       <div class="help">Be specific — the more detail you give, the more targeted your roadmap will be.</div>
     </div>
     <label class="toggle-row">
@@ -486,7 +486,7 @@ function renderAuth() {
         </div>
       </div>`;
     gate.style.display = 'none';
-    btn.disabled = false;
+    btn.disabled = !document.getElementById('interests')?.value.trim();
   } else {
     hdr.innerHTML = `<button class="auth-btn" id="btn-login" onclick="login()">Connect GitHub</button>`;
     gate.style.display = 'block';
@@ -494,6 +494,11 @@ function renderAuth() {
   }
 }
 renderAuth();
+
+document.getElementById('interests').addEventListener('input', () => {
+  const btn = document.getElementById('submit-btn');
+  if (btn && auth?.token) btn.disabled = !document.getElementById('interests').value.trim();
+});
 
 // ── Canvas status ─────────────────────────────────────────────────────────────
 function postMessageRequest(type, responseType, timeout = 2000) {
@@ -543,7 +548,16 @@ window.addEventListener('message', (event) => {
 setTimeout(async () => {
   if (_statusRendered) return;
   const d = await postMessageRequest('sp-get-health', 'sp-health');
-  if (!_statusRendered) { _statusRendered = true; renderStatus(d); }
+  if (!_statusRendered) {
+    _statusRendered = true;
+    renderStatus(d);
+    // Extension not found — auto-enable demo mode so judges can try immediately
+    if (!d) {
+      const toggle = document.getElementById('demo-mode');
+      toggle.checked = true;
+      toggle.dispatchEvent(new Event('change'));
+    }
+  }
 }, 2000);
 
 document.getElementById('demo-mode').addEventListener('change', function () {
@@ -803,7 +817,9 @@ window.submit = async () => {
 
       if (!res.ok) {
         const txt = await res.text();
-        throw new Error(`API ${res.status}: ${txt.slice(0, 200)}`);
+        if (res.status === 429) throw new Error('Rate limit reached — wait 30 seconds and try again, or switch models in the menu above.');
+        if (res.status === 401) throw new Error('GitHub token expired — sign out and reconnect your account.');
+        throw new Error(`Request failed (${res.status}). Try again or switch to demo mode.`);
       }
 
       let textContent = '';
