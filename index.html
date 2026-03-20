@@ -565,6 +565,7 @@ function renderStatus(d) {
     return;
   }
   if (banner) banner.classList.add('hidden');
+  const canvasHref = d.lastCanvasHost || 'https://canvas.instructure.com';
   const parts = [];
   if (d.canvasCourses > 0) parts.push(`Canvas: ${d.canvasCourses} courses`);
   if (d.sbCompleted > 0)   parts.push(`SkillsBuild: ${d.sbCompleted} completed`);
@@ -574,7 +575,7 @@ function renderStatus(d) {
     txt.textContent = parts.join(' · ');
   } else {
     bar.className = 'status-bar wait';
-    txt.textContent = 'Extension connected — open Canvas and SkillsBuild to sync data.';
+    txt.innerHTML = `Extension connected — open <a href="${canvasHref}" target="_blank" rel="noopener" style="color:var(--accent)">Canvas</a> and <a href="https://skills.yourlearning.ibm.com" target="_blank" rel="noopener" style="color:var(--accent)">IBM SkillsBuild</a> to sync your data.`;
   }
 }
 
@@ -821,7 +822,8 @@ window.submit = async () => {
   if (!demoMode) {
     const health = await postMessageRequest('sp-get-health', 'sp-health');
     if (!health?.canvasCourses) {
-      return showErr('No Canvas data yet — open Canvas LMS in your browser so the extension can sync your courses, or enable "Try with sample student" to demo without Canvas.');
+      const canvasUrl = health?.lastCanvasHost || 'https://canvas.instructure.com';
+      return showErr(`No Canvas data yet — open ${canvasUrl} in your browser so the extension can sync your courses, or enable "Try with sample student" to demo without Canvas.`);
     }
   }
 
